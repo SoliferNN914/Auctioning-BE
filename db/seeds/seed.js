@@ -1,23 +1,28 @@
-const { userData } = require("./data/index.js");
+
 const format = require("pg-format");
-const db = require("./connection");
+const db = require("../connection");
 
-function seed() {
+function seed({userData}) {
   return db
-    .query("DROP TABLE IF EXISTS rides;")
+    .query("DROP TABLE IF EXISTS users;")
     .then(() => {
-      return db.query("DROP TABLE IF EXISTS parks;");
+      return db.query(`
+        CREATE TABLE users (
+        user_id SERIAL PRIMARY KEY,
+        username VARCHAR(40) NOT NULL,
+        profile_url VARCHAR(350) NOT NULL
+        )`);
     })
     .then(() => {
-      return createUsersTable();
-    })
-
-function createUsersTable() {
-  const query = `  CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(40) NOT NULL,
-    profile_url VARCHAR(350) NOT NULL,
-  )`;
+      const insertUsersQueryStr = format(
+        "INSERT INTO users (username, profile_url) VALUES %L;",
+        userData.map(({ username, profile_url }) => [
+          username,
+          profile_url,
+        ])
+      );
+      return db.query(insertUsersQueryStr);
+    });
 }
 
 module.exports = seed;
