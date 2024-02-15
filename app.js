@@ -1,4 +1,4 @@
-const { getUsers } = require('./controllers/test-data-controllers')
+const { getUsers, postUsers } = require('./controllers/test-data-controllers')
 
 
 const express = require("express")
@@ -9,6 +9,7 @@ app.use(express.json());
 
 
 app.get("/api/users", getUsers)
+app.post("/api/users", postUsers)
 
 
 module.exports = app;

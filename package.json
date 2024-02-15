@@ -1,5 +1,3 @@
-
-
 {
   "name": "be-auctioning",
   "version": "1.0.0",
@@ -7,16 +5,20 @@
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node '../BE-Auctioning/db/seeds/run-seed'",
-    "start": "node listen.js"
+    "start": "node listen.js",
+    "test": "jest __tests__/app.test.js"
   },
   "devDependencies": {
-    "pg-format": "^1.0.4"
+    "pg-format": "^1.0.4",
+    "supertest": "^6.3.4"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.4",
     "express": "^4.18.2",
     "fs.promises": "^0.1.2",
+    "jest": "^29.7.0",
+    "jest-extended": "^4.0.2",
     "pg": "^8.11.3",
     "pg-format": "^1.0.4"
   }
