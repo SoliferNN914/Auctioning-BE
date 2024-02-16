@@ -1,1 +1,0 @@
-const { seed } = require('../BE-Auctioning/db/seeds/run-seed')

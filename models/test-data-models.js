@@ -7,14 +7,24 @@ exports.selectUsers = () => {
   });
 };
 
-exports.insertUser = (user) => {
-  const { username, profile_url } = user;
-  return db
-    .query(
-      `INSERT INTO users (username, profile_url) VALUES ($1, $2) RETURNING *;`,
-      [username, profile_url]
+exports.selectUsersById = (user_id) => {
+  return db.query(
+    `SELECT * FROM users WHERE user_id = $1`, [user_id]
+  )
+  .then(({ rows }) => {
+    return rows[0];
+  });
+}
+
+
+exports.updateUser = ({ username, user_id }) => {
+  console.log(username);
+  return db.query(
+      `UPDATE users SET username = $1 WHERE user_id = $2 RETURNING *;`,
+      [username, user_id]
     )
     .then(({ rows }) => {
-      return rows;
+      return rows[0];
     });
 };
+
