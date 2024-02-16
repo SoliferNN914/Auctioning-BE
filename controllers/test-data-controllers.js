@@ -2,6 +2,8 @@ const {
   selectUsers,
   updateUser,
   selectUsersById,
+  updateBidding,
+  selectBidById
 } = require("../models/test-data-models");
 
 const fs = require("fs/promises");
@@ -49,3 +51,31 @@ exports.patchUsers = (req, res, next) => {
       next(err);
     });
 };
+
+exports.patchBidding = (req, res, next) => {
+  const { price } = req.body;
+  const { user_id } = req.params;
+
+  updateBidding({ price, user_id })
+  .then((bid) => {
+    return res.status(200).send({ bid })
+  })
+  .catch((err) => {
+    next(err);
+  });
+};
+
+exports.getBidding = (req, res, next) => {
+  const { item_id } = req.params;
+  console.log(item_id);
+  selectBidById(item_id)
+    .then((bid) => {
+      if (!bid) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.status(200).json({ bid });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}

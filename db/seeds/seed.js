@@ -2,10 +2,13 @@
 const format = require("pg-format");
 const db = require("../connection");
 
-function seed({userData}) {
+function seed({userData, biddingData}) {
   return db
-    .query("DROP TABLE IF EXISTS users;")
-    .query("DROP TABLE IF EXISTS bidding")
+    .query(`DROP TABLE IF EXISTS users;`)
+    .then(() => {
+      return db.query(`DROP TABLE IF EXISTS bidding;`)
+    })
+
     .then(() => {
       return db.query(`
         CREATE TABLE users (
@@ -27,18 +30,20 @@ function seed({userData}) {
     .then(() => {
       return db.query(`
         CREATE TABLE bidding (
-        username VARCHAR(40) NOT NULL,
-        )`);
+        item_id SERIAL PRIMARY KEY,
+        film_name VARCHAR(40) NOT NULL,
+        price INT NOT NULL
+        );`);
     })
     .then(() => {
-      const insertUsersQueryStr = format(
-        "INSERT INTO bidding (username, profile_url) VALUES %L;",
-        userData.map(({ username, profile_url }) => [
-          username,
-          profile_url,
+      const insertBiddingQueryStr = format(
+        "INSERT INTO bidding (film_name, price) VALUES %L;",
+        biddingData.map(({ film_name, price }) => [
+          film_name,
+          price,
         ])
       );
-      return db.query(insertUsersQueryStr);
+      return db.query(insertBiddingQueryStr);
     });
 }
 

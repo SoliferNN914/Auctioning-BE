@@ -20,7 +20,7 @@ describe("/api/users/1", () => {
       .get("/api/users/1")
       .expect(200)
       .then(({ body }) => {
-        console.log(body.user);
+
         expect(body.user).toEqual({
           user_id: 1,
           username: "test1",
@@ -50,6 +50,30 @@ describe("PATCH /api/users/1", () => {
         const { user } = body;
         expect(user).toHaveProperty("user_id", 1);
         expect(user).toHaveProperty("username", "butter_bridge");
+      });
+  });
+});
+
+describe("PATCH /api/bidding/1", () => {
+  test("200: should respond with status 200 when object is passed in", () => {
+    const patch = {
+      price: 1
+    };
+    return request(app).patch("/api/bidding/1").send(patch).expect(200);
+  });
+  test("200: should respond username updated", () => {
+    const patch = {
+      price: 1
+    };
+    return request(app)
+      .patch("/api/bidding/1")
+      .expect(200)
+      .send(patch)
+      .then(({ body }) => {
+        const { bid } = body;
+        console.log(bid);
+        expect(bid).toHaveProperty("item_id", 1);
+        expect(bid).toHaveProperty("price", 1);
       });
   });
 });
