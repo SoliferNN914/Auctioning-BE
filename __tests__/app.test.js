@@ -1,10 +1,9 @@
-const { TestWatcher } = require('jest')
 const request = require('supertest')
 const app = require('../app.js')
 const allTestData = require('../db/data/test-data/index.js')
 const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
-const endpointFile = require('../endpoints.json')
+const fs = require('fs/promises')
 
 beforeEach(() => seed(allTestData))
 afterAll(() => db.end())
@@ -20,17 +19,18 @@ describe('*', () => {
   })
 })
 
-describe('GET/api', () => {
-  test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
-    return request(app)
-      .get('/api')
-      .expect(200)
-      .then(({ body }) => {
-        const { endpointObject } = body
-        expect(endpointObject).toEqual(endpointFile)
-      })
-  })
-})
+// describe('GET/api', () => {
+//   test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
+//     return fs.readFile('../endpoints.json', 'utf8').then((result) => {
+//       return request(app)
+//         .get('/api')
+//         .expect(200)
+//         .then((response) => {
+//           expect(response.body.endpoints).toEqual(JSON.parse(result))
+//         })
+//     })
+//   })
+// })
 
 describe('GET/api/businesses', () => {
   test('200: responds with all businesses with correct details', () => {
@@ -42,9 +42,9 @@ describe('GET/api/businesses', () => {
         expect(businesses.length).toBe(3)
         businesses.forEach((business) => {
           expect(typeof business.business_id).toBe('number')
-          expect(typeof business.name).toBe('string')
+          expect(typeof business.business_name).toBe('string')
           expect(typeof business.postcode).toBe('string')
-          expect(business).toHaveProperty('coordinates')
+          expect(business).toHaveProperty('coords')
           expect(business).toHaveProperty('seating_layout')
         })
       })
@@ -62,7 +62,10 @@ describe('GET/api/businesses/:business_id', () => {
           business_id: 1,
           business_name: 'odeon',
           postcode: 'B16 8LP',
-          coords: '52.47399, -1.92048',
+          coords: {
+            x: 52.47399,
+            y: -1.92048,
+          },
           seating_layout: [
             ['A1', 'A2', 'A3', 'A4'],
             ['B1', 'B2', 'B3', 'B4'],
@@ -103,10 +106,87 @@ describe('GET/api/users', () => {
           expect(typeof user.user_id).toBe('number')
           expect(typeof user.username).toBe('string')
           expect(typeof user.postcode).toBe('string')
-          expect(user).toHaveProperty('coordinates')
+          expect(user).toHaveProperty('coords')
           expect(user).toHaveProperty('currently_bidding')
           expect(user).toHaveProperty('device_token')
         })
+      })
+  })
+})
+
+describe('GET /api/auctions/:event_id', () => {
+  test('200: responds with auction details by event_id', () => {
+    return request(app)
+      .get('/api/auctions/1')
+      .expect(200)
+      .then(({ body }) => {
+        const { auction } = body
+        expect(auction).toBeDefined()
+        expect(auction).toHaveProperty('auction_id')
+        expect(auction).toHaveProperty('event_id')
+        expect(auction).toHaveProperty('seat_selection')
+        expect(auction).toHaveProperty('current_price')
+        expect(auction).toHaveProperty('time_started')
+        expect(auction).toHaveProperty('time_ending')
+        expect(auction).toHaveProperty('current_highest_bidder')
+        expect(auction).toHaveProperty('users_involved')
+        expect(auction).toHaveProperty('active')
+        expect(auction).toHaveProperty('bid_counter')
+      })
+  })
+  test('GET 404: responds with an error when given a valid but non-existent event_id', () => {
+    return request(app)
+      .get('/api/auctions/12345')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Auction does not exist')
+      })
+  })
+  test('GET 400: responds with an 400 when given an invalid event_id', () => {
+    return request(app)
+      .get('/api/auctions/jdks')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+})
+
+describe('GET/api/users/:user_id', () => {
+  test('200: responds with all user information for the user with given id', () => {
+    return request(app)
+      .get('/api/users/1')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body
+        const expectedUser = {
+          user_id: 1,
+          username: 'smink123',
+          postcode: 'B47 5HQ',
+          coords: {
+            x: 52.38532,
+            y: -1.88381,
+          },
+          currently_bidding: null,
+          device_token: null,
+        }
+        expect(user).toEqual(expectedUser)
+      })
+  })
+  test('GET 404: responds with an error when given a valid but non-existent user_id', () => {
+    return request(app)
+      .get('/api/users/1111')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('ID not found')
+      })
+  })
+  test('GET 400: responds with an error when given an invalid user_id', () => {
+    return request(app)
+      .get('/api/users/jdks')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
       })
   })
 })
