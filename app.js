@@ -1,9 +1,9 @@
+const { getEndpoints } = require('./controllers/api.controllers')
 const {
-  getUsers,
-  patchUsers,
-  getUsersById,
-  getInfo
-} = require('./controllers/test-data-controllers')
+  getAllBusinesses,
+  getBusinessById,
+} = require('./controllers/businesses.controllers')
+const { getAllUsers } = require('./controllers/users.controllers')
 
 const express = require('express')
 
@@ -13,10 +13,29 @@ const cors = require('cors')
 app.use(cors())
 app.use(express.json())
 
-app.get('/api/users', getUsers)
-app.get('/api/users/:user_id', getUsersById)
-app.patch('/api/users/:user_id', patchUsers)
-app.get('/api', getInfo)
-app.get('/api/events', )
+app.get('/api', getEndpoints)
+
+app.get('/api/businesses', getAllBusinesses)
+app.get('/api/businesses/:business_id', getBusinessById)
+
+app.get('/api/users', getAllUsers)
+
+app.all("*", (req, res, next) => {
+  res.status(404).send({ msg: "Invalid path" });
+});
+
+app.use((err, req, res, next) => {
+  if (err.status === 404) {
+    res.status(404).send({ msg: err.msg })
+  } else {
+    next(err)
+  }
+})
+
+app.use((err, req, res, next) => {
+  if (err.code === '22P02' || '23503' || '23502') {
+    res.status(400).send({ msg: 'Bad request' })
+  }
+})
 
 module.exports = app
