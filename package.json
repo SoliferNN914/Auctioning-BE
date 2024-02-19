@@ -4,7 +4,7 @@
   "description": "be-auctioning",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
-    "seed": "node '../BE-Auctioning/db/seeds/run-seed'",
+    "seed": "node ./db/seeds/run-seed.js",
     "start": "node listen.js",
     "lint": "eslint .",
     "test": "jest __tests__/app.test.js"
