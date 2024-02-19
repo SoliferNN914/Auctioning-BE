@@ -4,6 +4,7 @@ const {
   getBusinessById,
 } = require('./controllers/businesses.controllers')
 const { getAllUsers } = require('./controllers/users.controllers')
+const { getAuctionsById } = require('./controllers/auctions.controllers')
 
 const express = require('express')
 
@@ -19,6 +20,8 @@ app.get('/api/businesses', getAllBusinesses)
 app.get('/api/businesses/:business_id', getBusinessById)
 
 app.get('/api/users', getAllUsers)
+
+app.get('/api/auctions/:event_id', getAuctionsById)
 
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "Invalid path" });

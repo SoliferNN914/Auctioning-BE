@@ -110,3 +110,41 @@ describe('GET/api/users', () => {
       })
   })
 })
+
+describe.only('GET /api/auctions/:event_id', () => {
+  test('200: responds with auction details by event_id', () => {
+    return request(app)
+      .get('/api/auctions/1')
+      .expect(200)
+      .then(({ body }) => {
+        const { auction } = body;
+        expect(auction).toBeDefined();
+        expect(auction).toHaveProperty('auction_id');
+        expect(auction).toHaveProperty('event_id');
+        expect(auction).toHaveProperty('seat_selection');
+        expect(auction).toHaveProperty('current_price');
+        expect(auction).toHaveProperty('time_started');
+        expect(auction).toHaveProperty('time_ending');
+        expect(auction).toHaveProperty('current_highest_bidder');
+        expect(auction).toHaveProperty('users_involved');
+        expect(auction).toHaveProperty('active');
+        expect(auction).toHaveProperty('bid_counter');
+      });
+  });
+  test('GET 404: responds with an error when given a valid but non-existent event_id', () => {
+    return request(app)
+      .get('/api/auctions/12345')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Auction does not exist')
+      })
+  })
+  test('GET 400: responds with an 400 when given an invalid event_id', () => {
+    return request(app)
+      .get('/api/auctions/jdks')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+});
