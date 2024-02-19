@@ -13,7 +13,7 @@ exports.fetchBusinessById = (business_id) => {
     ])
     .then((business) => {
       if (!business.rows.length) {
-        return Promise.reject({ status: 404, msg: 'Business does not exist' })
+        return Promise.reject({ status: 404, msg: 'ID not found' })
       }
       return business.rows[0]
     })
