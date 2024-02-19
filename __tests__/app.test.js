@@ -110,3 +110,55 @@ describe('GET/api/users', () => {
       })
   })
 })
+
+describe('PATCH/events/seating/:event_id', () => {
+  test('200: sends an object of the event with updated seating', () => {
+    return request(app)
+      .patch('/api/events/seating/1')
+      .send({ seats_sold: ['C1', 'C2', 'C3', 'C4'] })
+      .expect(200)
+      .then(({ body }) => {
+        const { event } = body
+        expect(event).toMatchObject({
+          event_id: 1,
+          film_title: 'Bob Marley: One Love',
+          poster:
+            'https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg',
+          certificate: '12',
+          run_time: 104,
+          // start_time: `1708376518593`,
+          available_seats: ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4'],
+          active: true,
+          start_price: '3',
+          business_id: 1,
+        })
+      })
+  })
+  test('400: sends an appropriate error if id is invalid', () => {
+    return request(app)
+      .patch('/api/events/seating/hello')
+      .send({ seats_sold: ['C1', 'C2', 'C3', 'C4'] })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  })
+  test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+    return request(app)
+      .patch('/api/events/seating/744859587')
+      .send({ seats_sold: ['C1', 'C2', 'C3', 'C4'] })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Event not found.')
+      })
+  })
+  test('400: sends an appropriate error if given seats are invalid (e.g. not an array) or missing', () => {
+    return request(app)
+      .patch('/api/events/seating/1')
+      .send({ seats_sold: 'hello' })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  })
+})
