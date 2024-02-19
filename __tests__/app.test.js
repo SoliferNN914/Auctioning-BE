@@ -4,9 +4,22 @@ const app = require('../app.js')
 const allTestData = require('../db/data/test-data/index.js')
 const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
+const endpointFile = require('../endpoints.json')
 
 beforeEach(() => seed(allTestData))
 afterAll(() => db.end())
+
+describe('GET/api', () => {
+  test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
+    return request(app)
+      .get('/api')
+      .expect(200)
+      .then(({ body }) => {
+        const { endpointObject } = body
+        expect(endpointObject).toEqual(endpointFile)
+      })
+  })
+})
 
 // describe('/api/users', () => {
 //   test('200: responds with an array of users', () =>
