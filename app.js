@@ -4,7 +4,6 @@ const {
   getBusinessById,
 } = require('./controllers/businesses.controllers')
 
-const { getAllUsers } = require('./controllers/users.controllers')
 const { getAuctionsById } = require('./controllers/auctions.controllers')
 
 const { getAllUsers, getUserById } = require('./controllers/users.controllers')
@@ -29,12 +28,13 @@ app.get('/api/users/:user_id', getUserById)
 
 
 app.get('/api/auctions/:event_id', getAuctionsById)
+app.patch('/api/events/seating/:event_id', patchSeatingById)
+
 
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "Invalid path" });
 });
 
-app.patch('/api/events/seating/:event_id', patchSeatingById)
 
 app.all('*', (req, res, next) => {
   res.status(404).send({ msg: 'Invalid path' })
