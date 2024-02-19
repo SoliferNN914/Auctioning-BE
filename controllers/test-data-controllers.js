@@ -48,3 +48,7 @@ exports.patchUsers = (req, res, next) => {
       next(err)
     })
 }
+
+exports.getInfo = (req, res, next) => {
+  res.status(200).send(jsonFile);
+}
