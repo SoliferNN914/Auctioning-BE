@@ -30,5 +30,10 @@
     "jest-extended": "^4.0.2",
     "pg": "^8.11.3",
     "pg-format": "^1.0.4"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "jest-sorted"
+    ]
   }
 }

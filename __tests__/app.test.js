@@ -243,9 +243,67 @@ describe('PATCH/events/seating/:event_id', () => {
   })
 })
 
-
 //Returns array of event objects, can return all information.
-// Optional queries: open, cinema_id, distance (5 mi default)
+// get /events/business/:business_id
+// Optional queries: open, cinema_id,
+// get /events/near/:user_id
+// Optional queries: distance (5 mi default)
 // Optional ordering by distance from given coordinates
-// get all events
-// 
+// possibly split
+
+describe('/events/business/:business_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of articles objects with the correct properties, sorted by date in descending order', () => {
+      return request(app)
+        .get('/events/business/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { events } = body
+          expect(Array.isArray(events)).toBe(true)
+          events.forEach((event) => {
+            expect(typeof event.event_id).toBe('number')
+            expect(typeof event.film_title).toBe('string')
+            expect(typeof event.poster).toBe('string')
+            expect(typeof event.certificate).toBe('string')
+            expect(typeof event.run_time).toBe('number')
+            expect(Array.isArray(event.available_seats)).toBe(true)
+            expect(typeof event.active).toBe('boolean')
+            expect(typeof event.start_price).toBe('string')
+            expect(typeof event.business_id).toBe('number')
+          })
+        })
+    })
+    describe('?active=true/false', () => {
+      test('200: sends an array of only active events', () => {
+        return request(app)
+          .get('/events/business/1?active=true')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            events.forEach((event) => {
+              expect(event.active).toBe(true)
+            })
+          })
+      })
+      test('200: sends an array of only inactive events', () => {
+        return request(app)
+          .get('/events/business/1?active=false')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            events.forEach((event) => {
+              expect(event.active).toBe(false)
+            })
+          })
+      })
+      test("400: sends an appropriate error if active is invalid", () => {
+        return request(app)
+          .get('/events/business/1?active=hello')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid active query')
+          })
+      })
+    })
+  })
+})

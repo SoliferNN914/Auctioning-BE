@@ -1,4 +1,7 @@
-const { updateSeatingById, selectEvents } = require('../models/events.models')
+const {
+  updateSeatingById,
+  selectEventsByBusinessId,
+} = require('../models/events.models')
 
 exports.patchSeatingById = (req, res, next) => {
   const { event_id } = req.params
@@ -12,8 +15,14 @@ exports.patchSeatingById = (req, res, next) => {
     })
 }
 
-exports.getEvents = (req, res, next) => {
-  selectEvents()
-    .then()
-    .catch((err) => next(err))
+exports.getEventsByBusinessId = (req, res, next) => {
+  const { business_id } = req.params
+  const { active } = req.query
+  selectEventsByBusinessId(active, business_id)
+  .then((events) => {
+    res.status(200).send({ events })
+  })
+    .catch((err) => {
+      next(err)
+    })
 }

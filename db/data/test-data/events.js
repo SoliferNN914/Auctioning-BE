@@ -18,6 +18,18 @@ module.exports = [
     business_id: 1,
   },
   {
+    film_title: 'Bob Marley: One Love',
+    poster:
+      'https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg',
+    certificate: '12',
+    run_time: '104',
+    start_time: `${filmStart1}`,
+    available_seats: '{A1,A2,A3,A4,B1,B2,B3,B4,C1,C2,C3,C4}',
+    active: false,
+    start_price: 3,
+    business_id: 1,
+  },
+  {
     film_title: 'Madame Webb',
     poster:
       'https://m.media-amazon.com/images/M/MV5BMjhkYjA0ZmUtM2I4OC00YzQ1LTk2YWUtYjA3ZGRhM2YzYWU1XkEyXkFqcGdeQXVyMTc1MzUzOTY0._V1_SX300.jpg',
