@@ -11,6 +11,8 @@ const { getAllUsers, getUserById } = require('./controllers/users.controllers')
 const {
   patchSeatingById,
   getEventById,
+  getEventsByBusinessId,
+  getEventsByUserId,
 } = require('./controllers/events.controllers')
 
 const express = require('express')
@@ -31,6 +33,8 @@ app.get('/api/users/:user_id', getUserById)
 
 app.get('/api/auctions/:event_id', getAuctionsById)
 app.patch('/api/events/seating/:event_id', patchSeatingById)
+app.get('/events/business/:business_id', getEventsByBusinessId)
+app.get('/events/near/:user_id', getEventsByUserId)
 
 app.get('/api/events/:event_id', getEventById)
 
@@ -43,11 +47,8 @@ app.all('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-  if (err.status === 404) {
-    res.status(404).send({ msg: err.msg })
-  } else {
-    next(err)
-  }
+  if (err.status && err.msg) res.status(err.status).send({ msg: err.msg })
+  else next(err)
 })
 
 app.use((err, req, res, next) => {

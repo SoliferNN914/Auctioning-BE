@@ -65,8 +65,8 @@ describe('GET/api/businesses/:business_id', () => {
           business_name: 'odeon',
           postcode: 'B16 8LP',
           coords: {
-            x: 52.47399,
-            y: -1.92048,
+            x: -1.92048,
+            y: 52.47399,
           },
           seating_layout: [
             ['A1', 'A2', 'A3', 'A4'],
@@ -166,8 +166,8 @@ describe('GET/api/users/:user_id', () => {
           username: 'smink123',
           postcode: 'B47 5HQ',
           coords: {
-            x: 52.38532,
-            y: -1.88381,
+            x: -1.88381,
+            y: 52.38532,
           },
           currently_bidding: null,
           device_token: null,
@@ -242,6 +242,135 @@ describe('PATCH/events/seating/:event_id', () => {
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request')
       })
+  })
+})
+
+describe('/events/business/:business_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of events objects associated with the given and with the correct properties', () => {
+      return request(app)
+        .get('/events/business/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { events } = body
+          expect(Array.isArray(events)).toBe(true)
+          events.forEach((event) => {
+            expect(typeof event.event_id).toBe('number')
+            expect(typeof event.film_title).toBe('string')
+            expect(typeof event.poster).toBe('string')
+            expect(typeof event.certificate).toBe('string')
+            expect(typeof event.run_time).toBe('number')
+            expect(Array.isArray(event.available_seats)).toBe(true)
+            expect(typeof event.active).toBe('boolean')
+            expect(typeof event.start_price).toBe('string')
+            expect(typeof event.business_id).toBe('number')
+          })
+        })
+    })
+    describe('?active=true/false', () => {
+      test('200: sends an array of only active events', () => {
+        return request(app)
+          .get('/events/business/1?active=true')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            events.forEach((event) => {
+              expect(event.active).toBe(true)
+            })
+          })
+      })
+      test('200: sends an array of only inactive events', () => {
+        return request(app)
+          .get('/events/business/1?active=false')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            events.forEach((event) => {
+              expect(event.active).toBe(false)
+            })
+          })
+      })
+      test('400: sends an appropriate error if active is invalid', () => {
+        return request(app)
+          .get('/events/business/1?active=hello')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid active query')
+          })
+      })
+    })
+  })
+})
+
+describe('/events/near/:user_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of active events objects with the correct properties, sorted by distance from the given user, under 8 miles by default', () => {
+      return request(app)
+        .get('/events/near/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { events } = body
+          expect(Array.isArray(events)).toBe(true)
+          expect(events).toBeSortedBy('distance_in_miles')
+          events.forEach((event) => {
+            expect(event.distance_in_miles).toBeLessThan(8)
+            expect(typeof event.event_id).toBe('number')
+            expect(typeof event.film_title).toBe('string')
+            expect(typeof event.poster).toBe('string')
+            expect(typeof event.certificate).toBe('string')
+            expect(typeof event.run_time).toBe('number')
+            expect(Array.isArray(event.available_seats)).toBe(true)
+            expect(event.active).toBe(true)
+            expect(typeof event.start_price).toBe('string')
+            expect(typeof event.business_id).toBe('number')
+          })
+        })
+    })
+    test('200: sends an empty array no events are in range', () => {
+      return request(app)
+        .get('/events/near/3')
+        .expect(200)
+        .then(({ body }) => {
+          const { events } = body
+          expect(Array.isArray(events)).toBe(true)
+          expect(events.length).toBe(0)
+        })
+    })
+    test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
+      return request(app)
+        .get('/events/near/hello')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad request')
+        })
+    })
+    test("404: sends an appropriate error if article id is valid but doesn't exist", () => {
+      return request(app)
+        .get('/events/near/34234234')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('User not found.')
+        })
+    })
+    describe('?distance=num', () => {
+      test('200: sends an array of events within the given radius', () => {
+        return request(app)
+          .get('/events/near/1?distance=20')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            expect(events.length).toBe(4)
+          })
+      })
+      test('400: sends an appropriate error if distance is invalid (not a number)', () => {
+        return request(app)
+          .get('/events/near/1?distance=hello')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid distance query')
+          })
+      })
+    })
   })
 })
 
