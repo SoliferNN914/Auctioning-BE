@@ -162,3 +162,10 @@ describe('PATCH/events/seating/:event_id', () => {
       })
   })
 })
+
+
+//Returns array of event objects, can return all information.
+// Optional queries: open, cinema_id, distance (5 mi default)
+// Optional ordering by distance from given coordinates
+// get all events
+// 

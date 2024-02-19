@@ -20,3 +20,8 @@ exports.updateSeatingById = (seats_sold, event_id) => {
       return rows[0]
     })
 }
+
+
+exports.selectEvents = () => {
+    
+}
