@@ -8,6 +8,8 @@ exports.updateSeatingById = (seats_sold, event_id) => {
         return Promise.reject({ status: 404, msg: 'Event not found.' })
       if (!Array.isArray(seats_sold) || !seats_sold.length)
         return Promise.reject
+      if (!Array.isArray(seats_sold) || !seats_sold.length)
+        return Promise.reject
       const currentSeats = rows[0].available_seats
       const updatedSeats = currentSeats.filter(
         (seat) => !seats_sold.includes(seat)
@@ -35,4 +37,29 @@ exports.selectEventsByBusinessId = (active, business_id) => {
   return db.query(queryStr, queryValues).then(({ rows }) => {
     return rows
   })
+}
+
+exports.selectEventsByBusinessId = (active, business_id) => {
+  if (active && !["true","false"].includes(active.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: 'Invalid active query' })
+  }
+  const queryValues = [business_id]
+  let queryStr = `SELECT * FROM events WHERE business_id = $1`
+  if (active) {
+    queryValues.push(active)
+    queryStr += ' AND active = $2'
+  }
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    return rows
+  })
+}
+exports.fetchEventById = (event_id) => {
+  return db
+    .query(`SELECT * FROM events WHERE events.event_id = $1`, [event_id])
+    .then((event) => {
+      if (!event.rows.length) {
+        return Promise.reject({ status: 404, msg: 'ID not found' })
+      }
+      return event.rows[0]
+    })
 }

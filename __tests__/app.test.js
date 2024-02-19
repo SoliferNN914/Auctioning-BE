@@ -4,6 +4,8 @@ const allTestData = require('../db/data/test-data/index.js')
 const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
 const fs = require('fs/promises')
+const d = new Date()
+const filmStart1 = d.setHours(d.getHours() + 6)
 
 beforeEach(() => seed(allTestData))
 afterAll(() => db.end())
@@ -296,7 +298,7 @@ describe('/events/business/:business_id', () => {
             })
           })
       })
-      test("400: sends an appropriate error if active is invalid", () => {
+      test('400: sends an appropriate error if active is invalid', () => {
         return request(app)
           .get('/events/business/1?active=hello')
           .expect(400)
@@ -305,5 +307,58 @@ describe('/events/business/:business_id', () => {
           })
       })
     })
+  })
+})
+describe('GET/events/:event_id', () => {
+  test('200: responds with all event information for the event with given id', () => {
+    return request(app)
+      .get('/api/events/1')
+      .expect(200)
+      .then(({ body }) => {
+        const { event } = body
+        const expectedEvent = {
+          event_id: 1,
+          film_title: 'Bob Marley: One Love',
+          poster:
+            'https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg',
+          certificate: '12',
+          run_time: 104,
+          available_seats: [
+            'A1',
+            'A2',
+            'A3',
+            'A4',
+            'B1',
+            'B2',
+            'B3',
+            'B4',
+            'C1',
+            'C2',
+            'C3',
+            'C4',
+          ],
+          active: true,
+          start_price: '3',
+          business_id: 1,
+        }
+        expect(event).toMatchObject(expectedEvent)
+        expect(event).toHaveProperty('start_time')
+      })
+  })
+  test('GET 404: responds with an error when given a valid but non-existent event_id', () => {
+    return request(app)
+      .get('/api/events/1111')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('ID not found')
+      })
+  })
+  test('GET 400: responds with an error when given an invalid event_id', () => {
+    return request(app)
+      .get('/api/events/jdks')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
   })
 })
