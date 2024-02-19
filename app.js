@@ -6,7 +6,11 @@ const {
 
 const { getAuctionsById } = require('./controllers/auctions.controllers')
 
-const { getAllUsers, getUserById } = require('./controllers/users.controllers')
+const {
+  getAllUsers,
+  getUserById,
+  postNewUser,
+} = require('./controllers/users.controllers')
 
 const {
   patchSeatingById,
@@ -28,6 +32,7 @@ app.get('/api/businesses/:business_id', getBusinessById)
 
 app.get('/api/users', getAllUsers)
 app.get('/api/users/:user_id', getUserById)
+app.post('/api/users', postNewUser)
 
 app.get('/api/auctions/:event_id', getAuctionsById)
 app.patch('/api/events/seating/:event_id', patchSeatingById)

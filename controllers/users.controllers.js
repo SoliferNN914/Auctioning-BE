@@ -1,4 +1,9 @@
-const { fetchAllUsers, fetchUserById } = require('../models/users.models')
+const {
+  fetchAllUsers,
+  fetchUserById,
+  addNewUser,
+} = require('../models/users.models')
+const postcodes = require('node-postcodes.io')
 
 exports.getAllUsers = (req, res, next) => {
   fetchAllUsers()
@@ -11,11 +16,24 @@ exports.getAllUsers = (req, res, next) => {
 }
 
 exports.getUserById = (req, res, next) => {
-  const {user_id} = req.params
-  fetchUserById(user_id).then((user) => {
-    res.status(200).send({user})
-  })
-  .catch((err) => {
-    next(err)
-  })
+  const { user_id } = req.params
+  fetchUserById(user_id)
+    .then((user) => {
+      res.status(200).send({ user })
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.postNewUser = (req, res, next) => {
+  const { body } = req
+  const userPostcode = body.postcode
+  addNewUser(body, userPostcode)
+    .then((user) => {
+      res.status(201).send({ user })
+    })
+    .catch((err) => {
+      next(err)
+    })
 }

@@ -116,6 +116,24 @@ describe('GET/api/users', () => {
   })
 })
 
+describe.only('POST /api/users', () => {
+  test('201: inserts a new user into the database, returning an object with all of the new user information', () => {
+    const userToAdd = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: null,
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toEqual(userToAdd)
+      })
+  })
+})
+
 describe('GET /api/auctions/:event_id', () => {
   test('200: responds with auction details by event_id', () => {
     return request(app)
