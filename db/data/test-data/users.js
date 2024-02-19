@@ -1,12 +1,30 @@
 module.exports = [
   {
-    username: 'test1',
-    profile_url:
-      'https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953',
+    username: 'smink123',
+    postcode: 'B47 5HQ',
+    coords: '52.38532, -1.88381',
+    currently_bidding: false,
+    device_token: null,
   },
   {
-    username: 'test2',
-    profile_url:
-      'https://vignette.wikia.nocookie.net/mrmen/images/7/78/Mr-Grumpy-3A.PNG/revision/latest?cb=20170707233013',
+    username: 'tiahontoast',
+    postcode: 'CV5 9EH',
+    coords: '52.43182, -1.52319',
+    currently_bidding: false,
+    device_token: null,
+  },
+  {
+    username: 'mrtickle21',
+    postcode: 'RG4 6DH',
+    coords: '51.47080, -0.95905',
+    currently_bidding: false,
+    device_token: null,
+  },
+  {
+    username: 'mrgrumpy19',
+    postcode: 'S10 2HP',
+    coords: '53.37919, -1.48922',
+    currently_bidding: false,
+    device_token: null,
   },
 ]
