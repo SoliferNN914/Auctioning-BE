@@ -3,7 +3,7 @@ const {
   getAllBusinesses,
   getBusinessById,
 } = require('./controllers/businesses.controllers')
-const { getAllUsers } = require('./controllers/users.controllers')
+const { getAllUsers, getUserById } = require('./controllers/users.controllers')
 
 const express = require('express')
 
@@ -14,12 +14,13 @@ const { patchSeatingById } = require('./controllers/events.controllers')
 app.use(cors())
 app.use(express.json())
 
-app.get('/api', getEndpoints)
+app.get('/api/', getEndpoints)
 
 app.get('/api/businesses', getAllBusinesses)
 app.get('/api/businesses/:business_id', getBusinessById)
 
 app.get('/api/users', getAllUsers)
+app.get('/api/users/:user_id', getUserById)
 
 app.patch('/api/events/seating/:event_id', patchSeatingById)
 
