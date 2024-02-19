@@ -1,4 +1,3 @@
-const { TestWatcher } = require('jest')
 const request = require('supertest')
 const app = require('../app.js')
 const allTestData = require('../db/data/test-data/index.js')
@@ -115,27 +114,26 @@ describe('GET/api/users', () => {
   })
 })
 
-
-describe.only('GET /api/auctions/:event_id', () => {
+describe('GET /api/auctions/:event_id', () => {
   test('200: responds with auction details by event_id', () => {
     return request(app)
       .get('/api/auctions/1')
       .expect(200)
       .then(({ body }) => {
-        const { auction } = body;
-        expect(auction).toBeDefined();
-        expect(auction).toHaveProperty('auction_id');
-        expect(auction).toHaveProperty('event_id');
-        expect(auction).toHaveProperty('seat_selection');
-        expect(auction).toHaveProperty('current_price');
-        expect(auction).toHaveProperty('time_started');
-        expect(auction).toHaveProperty('time_ending');
-        expect(auction).toHaveProperty('current_highest_bidder');
-        expect(auction).toHaveProperty('users_involved');
-        expect(auction).toHaveProperty('active');
-        expect(auction).toHaveProperty('bid_counter');
-      });
-  });
+        const { auction } = body
+        expect(auction).toBeDefined()
+        expect(auction).toHaveProperty('auction_id')
+        expect(auction).toHaveProperty('event_id')
+        expect(auction).toHaveProperty('seat_selection')
+        expect(auction).toHaveProperty('current_price')
+        expect(auction).toHaveProperty('time_started')
+        expect(auction).toHaveProperty('time_ending')
+        expect(auction).toHaveProperty('current_highest_bidder')
+        expect(auction).toHaveProperty('users_involved')
+        expect(auction).toHaveProperty('active')
+        expect(auction).toHaveProperty('bid_counter')
+      })
+  })
   test('GET 404: responds with an error when given a valid but non-existent event_id', () => {
     return request(app)
       .get('/api/auctions/12345')
@@ -152,7 +150,7 @@ describe.only('GET /api/auctions/:event_id', () => {
         expect(response.body.msg).toBe('Bad request')
       })
   })
-});
+})
 
 describe('GET/api/users/:user_id', () => {
   test('200: responds with all user information for the user with given id', () => {
@@ -189,6 +187,10 @@ describe('GET/api/users/:user_id', () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad request')
+      })
+  })
+})
+
 describe('PATCH/events/seating/:event_id', () => {
   test('200: sends an object of the event with updated seating', () => {
     return request(app)
@@ -237,8 +239,6 @@ describe('PATCH/events/seating/:event_id', () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request')
-
       })
   })
 })
-
