@@ -12,37 +12,38 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
   db.query(`
   CREATE TABLE businesses (
     business_id SERIAL PRIMARY KEY,
-    name VARCHAR(20),
+    business_name VARCHAR(20),
     postcode VARCHAR(15),
-    coordinates POINT,
+    coords POINT,
     seating_layout TEXT[][]
     )`))
     .then(() => {
       const insertBusinessesQuertStr = format(
-        'INSERT INTO businesses (name, postcode, coordinates, seating_layout) VALUES %L;',
-        businessesData.map(({ name, postcode, coordinates, seating_layout }) => [name, postcode, coordinates, seating_layout])
+        'INSERT INTO businesses (business_name, postcode, coords, seating_layout) VALUES %L;',
+        businessesData.map(({ business_name, postcode, coords, seating_layout }) => [business_name, postcode, coords, seating_layout])
         )
         return db.query(insertBusinessesQuertStr)
       })
       .then(()=>
+      db.query(
       `CREATE TABLE events (
         event_id SERIAL PRIMARY KEY,
-        event_title VARCHAR(40),
+        film_title VARCHAR(40),
         poster TEXT,
         certificate VARCHAR(350),
-        runtime INT,
-        start_time TIMESTAMP,
+        run_time INT,
+        start_time VARCHAR(350),
         available_seats TEXT[],
         active BOOLEAN DEFAULT true,
-        start_price INT,
-        business_id INT REFERENCES businesses(business_id),
-      )`)
+        start_price DECIMAL,
+        business_id INT REFERENCES businesses(business_id)
+      )`))
       .then(() => {
         const insertEventsQueryStr = format(
-          'INSERT INTO events (event_title, poster, certificate, runtime, start_time, available_seats, active, start_price, business_id) VALUES %L;',
-          eventsData.map(({ event_title, poster, certificate, runtime, start_time , available_seats, active, start_price, business_id }) => [event_title, poster, certificate, runtime, start_time, available_seats, active, start_price, business_id])
+          'INSERT INTO events (film_title, poster, certificate, run_time, start_time, available_seats, active, start_price, business_id) VALUES %L RETURNING *;',
+          eventsData.map(({ film_title, poster, certificate, run_time, start_time , available_seats, active, start_price, business_id }) => [film_title, poster, certificate, run_time, start_time, available_seats, active, start_price, business_id])
         )
-        return db.return(insertEventsQueryStr)
+        return db.query(insertEventsQueryStr)
       })
       .then(() =>
       db.query(`
@@ -50,15 +51,15 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
         user_id SERIAL PRIMARY KEY,
         username VARCHAR(40) NOT NULL,
         postcode VARCHAR(15),
-        coordinates POINT,
-        currently_bidding INT DEFAULT null REFERENCES auctions(auction_id),
+        coords POINT,
+        currently_bidding BOOLEAN DEFAULT null,
         device_token VARCHAR(350) DEFAULT null
         )`)
     )
     .then(() => {
       const insertUsersQueryStr = format(
-        'INSERT INTO users (username, postcode, coordinates, currently_bidding, device_token) VALUES %L;',
-        userData.map(({ username, postcode, coordinates, currently_bidding, device_token }) => [username, postcode, coordinates, currently_bidding, device_token])
+        'INSERT INTO users (username, postcode, coords, device_token) VALUES %L;',
+        userData.map(({ username, postcode, coords, device_token }) => [username, postcode, coords, device_token])
       )
       return db.query(insertUsersQueryStr)
     })
@@ -67,12 +68,12 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
       CREATE TABLE auctions (
         auction_id SERIAL PRIMARY KEY,
         event_id INT REFERENCES events(event_id),
-        seat_selection TEXT,
+        seat_selection TEXT[],
         current_price INT,
-        time_started TIMESTAMP,
-        time_ending TIMESTAMP,
+        time_started VARCHAR(350),
+        time_ending VARCHAR(350),
         current_highest_bidder INT REFERENCES users(user_id),
-        users_involved INT,
+        users_involved INT[],
         active BOOLEAN DEFAULT true,
         bid_counter INT DEFAULT 1
       )`))
