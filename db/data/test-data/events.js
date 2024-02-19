@@ -53,4 +53,16 @@ module.exports = [
     start_price: 4,
     business_id: 3,
   },
+  {
+    film_title: 'The Holdovers',
+    poster:
+      'https://m.media-amazon.com/images/M/MV5BNDc2MzNkMjMtZDY5NC00NmQ0LWI1NjctZjRhNWIzZjc4MGRiXkEyXkFqcGdeQXVyMjkwOTAyMDU@._V1_SX300.jpg',
+    certificate: '15',
+    run_time: '133',
+    start_time: `${filmStart3}`,
+    available_seats: '{A2,A5,B1,B2,B3,B4,B5,C1,C2,D3,D4,D5.E1,E2,E4,E5}',
+    active: true,
+    start_price: 4,
+    business_id: 2,
+  },
 ]
