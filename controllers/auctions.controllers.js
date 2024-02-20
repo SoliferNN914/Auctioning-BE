@@ -71,11 +71,9 @@ exports.postAuction = (req, res, next) => {
     users_involved,
   })
     .then((auction) => {
-      console.log('Auction created:', auction)
       res.status(201).send({ auction })
     })
     .catch((err) => {
-      console.error('Error creating auction:', err)
       next(err)
     })
 }
