@@ -43,14 +43,15 @@ exports.patchAuctionsById = (req, res, next) => {
       next(err);
     });
 };
+  
+  exports.getAuctionsWonByUserId = (req, res, next) => {
+    const { user_id } = req.params
+    selectAuctionsWonByUserId(user_id)
+      .then((auctions) => {
+        res.status(200).send({ auctions })
+      })
+      .catch((err) => {
+        next(err)
+      })
+  }
 
-exports.getAuctionsWonByUserId = (req, res, next) => {
-  const { user_id } = req.params
-  selectAuctionsWonByUserId(user_id)
-    .then((auctions) => {
-      res.status(200).send({ auctions })
-    })
-    .catch((err) => {
-      next(err)
-    })
-}

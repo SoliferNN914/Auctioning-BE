@@ -21,18 +21,18 @@ describe('*', () => {
   })
 })
 
-// describe('GET/api', () => {
-//   test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
-//     return fs.readFile('../endpoints.json', 'utf8').then((result) => {
-//       return request(app)
-//         .get('/api')
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.endpoints).toEqual(JSON.parse(result))
-//         })
-//     })
-//   })
-// })
+describe('GET/api', () => {
+  test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
+    return fs.readFile('./endpoints.json', 'utf8').then((result) => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then((response) => {
+          expect(response.body.endpointObject).toEqual(JSON.parse(result))
+        })
+    })
+  })
+})
 
 describe('GET/api/businesses', () => {
   test('200: responds with all businesses with correct details', () => {
@@ -112,6 +112,111 @@ describe('GET/api/users', () => {
           expect(user).toHaveProperty('currently_bidding')
           expect(user).toHaveProperty('device_token')
         })
+      })
+  })
+})
+
+describe('POST /api/users', () => {
+  test('201: inserts a new user into the database, returning an object with all of the new user information', () => {
+    const userToAdd = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+    }
+    const newUser = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: null,
+      coords: {
+        x: -2.246756,
+        y: 53.482225,
+      },
+      user_id: 5,
+      currently_bidding: null,
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toEqual(newUser)
+      })
+  })
+  test('201: inserts a new user into the database with a device token, returning an object with all of the new user information', () => {
+    const userToAdd = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: '765ABD673',
+    }
+    const newUser = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: '765ABD673',
+      coords: {
+        x: -2.246756,
+        y: 53.482225,
+      },
+      user_id: 5,
+      currently_bidding: null,
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toEqual(newUser)
+      })
+  })
+  test('POST 400: responds with an error when missing required keys', () => {
+    const userToAdd = {
+      postcode: 'M3 2BW',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with an error when given a username that already exists', () => {
+    const userToAdd = {
+      username: 'smink123',
+      postcode: 'B47 5HQ',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with a bad request error when any of the keys are incorrectly named', () => {
+    const userToAdd = {
+      name: 'smink123',
+      city: 'B47 5HQ',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with a bad request error when any of the values are empty strings', () => {
+    const userToAdd = {
+      username: '',
+      postcode: '',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
       })
   })
 })
@@ -482,7 +587,7 @@ describe('/auctions/user/:user_id', () => {
         .then(({ body }) => {
           const { auctions } = body
           expect(Array.isArray(auctions)).toBe(true)
-          expect(auctions.length).toBe(2)
+          expect(auctions.length).toBe(3)
           auctions.forEach((auction) => {
             expect(typeof auction.auction_id).toBe('number')
             expect(typeof auction.event_id).toBe('number')
@@ -542,7 +647,7 @@ describe('/auctions/user/:user_id', () => {
           .expect(200)
           .then(({ body }) => {
             const { auctions } = body
-            expect(auctions.length).toBe(1)
+            expect(auctions.length).toBe(2)
             auctions.forEach((auction) => {
               expect(auction.active).toBe(false)
             })
@@ -609,5 +714,154 @@ describe('/auctions/won/:user_id', () => {
           expect(body.msg).toBe('User not found.')
         })
     })
+  })
+})
+
+describe('POST', () => {
+  test('201: sends an object of the posted event', () => {
+    const d = new Date()
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3,
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { event } = body
+        expect(event).toMatchObject({
+          event_id: 6,
+          film_title: 'Poor Things',
+          poster:
+            'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+          certificate: '15',
+          run_time: 141,
+          available_seats: [
+            'A2',
+            'A5',
+            'B1',
+            'B2',
+            'C1',
+            'C2',
+            'D3',
+            'D4',
+            'D5',
+            'E1',
+            'E2',
+            'E4',
+            'E5',
+          ],
+          active: true,
+          start_price: "4",
+          business_id: 3,
+        })
+        expect(typeof event.start_time).toBe('string')
+      })
+  })
+  test("404: sends an appropriate error if the business doesn't exist", () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3435345,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Business not found.')
+      })
+  })
+  test('400: sends an appropriate error if any required keys are empty or missing(all)', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if available seats is empty', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '454',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
   })
 })

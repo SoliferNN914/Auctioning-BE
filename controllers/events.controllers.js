@@ -3,6 +3,7 @@ const {
   fetchEventById,
   selectEventsByBusinessId,
   selectEventsByUserId,
+  insertNewEvent,
 } = require('../models/events.models')
 
 exports.patchSeatingById = (req, res, next) => {
@@ -46,6 +47,17 @@ exports.getEventsByUserId = (req, res, next) => {
   selectEventsByUserId(distance, user_id)
     .then((events) => {
       res.status(200).send({ events })
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.postEvent = (req, res, next) => {
+  const new_event = req.body
+  insertNewEvent(new_event)
+    .then((event) => {
+      res.status(201).send({ event })
     })
     .catch((err) => {
       next(err)

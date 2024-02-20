@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const { checkExists } = require('../utils/check-exists')
 
 exports.updateSeatingById = (seats_sold, event_id) => {
   return db
@@ -69,4 +70,39 @@ exports.selectEventsByUserId = (distance = 8, user_id) => {
         return rows
       })
     })
+}
+
+exports.insertNewEvent = (new_event) => {
+  for (const key in new_event) {
+    if (new_event[key] === "" || new_event.available_seats.length === 0) {
+      return Promise.reject({ status: 400, msg: 'Bad Request: Missing Required Fields' })
+    }
+  }
+  return checkExists("businesses", "business_id", new_event.business_id, "Business").then(()=>{
+    const {
+      film_title,
+      poster,
+      certificate,
+      run_time,
+      start_time,
+      available_seats,
+      start_price,
+      business_id,
+    } = new_event
+    return db.query(
+      `INSERT INTO events (film_title, poster, certificate, run_time, start_time, available_seats, start_price, business_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING *`,
+      [
+        film_title,
+        poster,
+        certificate,
+        run_time,
+        start_time,
+        available_seats,
+        start_price,
+        business_id,
+      ])
+  })
+  .then(({rows}) => { return rows[0]})
 }
