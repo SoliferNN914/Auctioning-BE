@@ -171,7 +171,7 @@ describe('PATCH /api/auctions/:event_id', () => {
           auction_id: 1,
           event_id: 1,
           seat_selection: [ 'A1', 'A2' ],
-          current_price: null,
+          current_price: "5",
           current_highest_bidder: 2,
           users_involved: [ 1, 2, 3, 4, 5 ],
           active: false,
