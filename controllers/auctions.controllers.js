@@ -43,7 +43,6 @@ exports.patchAuctionsById = (req, res, next) => {
         res.status(200).send({ auctions })
       })
       .catch((err) => {
-        console.log(err)
         next(err)
       })
   }

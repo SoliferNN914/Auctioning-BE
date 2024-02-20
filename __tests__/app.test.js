@@ -482,7 +482,7 @@ describe('/auctions/user/:user_id', () => {
         .then(({ body }) => {
           const { auctions } = body
           expect(Array.isArray(auctions)).toBe(true)
-          expect(auctions.length).toBe(2)
+          expect(auctions.length).toBe(3)
           auctions.forEach((auction) => {
             expect(typeof auction.auction_id).toBe('number')
             expect(typeof auction.event_id).toBe('number')
@@ -542,7 +542,7 @@ describe('/auctions/user/:user_id', () => {
           .expect(200)
           .then(({ body }) => {
             const { auctions } = body
-            expect(auctions.length).toBe(1)
+            expect(auctions.length).toBe(2)
             auctions.forEach((auction) => {
               expect(auction.active).toBe(false)
             })
@@ -609,5 +609,154 @@ describe('/auctions/won/:user_id', () => {
           expect(body.msg).toBe('User not found.')
         })
     })
+  })
+})
+
+describe('POST', () => {
+  test('201: sends an object of the posted event', () => {
+    const d = new Date()
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3,
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { event } = body
+        expect(event).toMatchObject({
+          event_id: 6,
+          film_title: 'Poor Things',
+          poster:
+            'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+          certificate: '15',
+          run_time: 141,
+          available_seats: [
+            'A2',
+            'A5',
+            'B1',
+            'B2',
+            'C1',
+            'C2',
+            'D3',
+            'D4',
+            'D5',
+            'E1',
+            'E2',
+            'E4',
+            'E5',
+          ],
+          active: true,
+          start_price: "4",
+          business_id: 3,
+        })
+        expect(typeof event.start_time).toBe('string')
+      })
+  })
+  test("404: sends an appropriate error if the business doesn't exist", () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3435345,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Business not found.')
+      })
+  })
+  test('400: sends an appropriate error if any required keys are empty or missing(all)', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if available seats is empty', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '454',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
   })
 })
