@@ -103,7 +103,7 @@ describe('GET/api/users', () => {
       .expect(200)
       .then(({ body }) => {
         const { users } = body
-        expect(users.length).toBe(4)
+        expect(users.length).toBe(5)
         users.forEach((user) => {
           expect(typeof user.user_id).toBe('number')
           expect(typeof user.username).toBe('string')
@@ -171,7 +171,7 @@ describe('PATCH /api/auctions/:event_id', () => {
           auction_id: 1,
           event_id: 1,
           seat_selection: [ 'A1', 'A2' ],
-          current_price: null,
+          current_price: "5",
           current_highest_bidder: 2,
           users_involved: [ 1, 2, 3, 4, 5 ],
           active: false,
@@ -294,7 +294,7 @@ describe('/events/business/:business_id', () => {
   describe('GET', () => {
     test('200: sends an array of events objects associated with the given and with the correct properties', () => {
       return request(app)
-        .get('/events/business/1')
+        .get('/api/events/business/1')
         .expect(200)
         .then(({ body }) => {
           const { events } = body
@@ -315,7 +315,7 @@ describe('/events/business/:business_id', () => {
     describe('?active=true/false', () => {
       test('200: sends an array of only active events', () => {
         return request(app)
-          .get('/events/business/1?active=true')
+          .get('/api/events/business/1?active=true')
           .expect(200)
           .then(({ body }) => {
             const { events } = body
@@ -326,7 +326,7 @@ describe('/events/business/:business_id', () => {
       })
       test('200: sends an array of only inactive events', () => {
         return request(app)
-          .get('/events/business/1?active=false')
+          .get('/api/events/business/1?active=false')
           .expect(200)
           .then(({ body }) => {
             const { events } = body
@@ -337,7 +337,7 @@ describe('/events/business/:business_id', () => {
       })
       test('400: sends an appropriate error if active is invalid', () => {
         return request(app)
-          .get('/events/business/1?active=hello')
+          .get('/api/events/business/1?active=hello')
           .expect(400)
           .then(({ body }) => {
             expect(body.msg).toBe('Invalid active query')
@@ -351,7 +351,7 @@ describe('/events/near/:user_id', () => {
   describe('GET', () => {
     test('200: sends an array of active events objects with the correct properties, sorted by distance from the given user, under 8 miles by default', () => {
       return request(app)
-        .get('/events/near/1')
+        .get('/api/events/near/1')
         .expect(200)
         .then(({ body }) => {
           const { events } = body
@@ -373,7 +373,7 @@ describe('/events/near/:user_id', () => {
     })
     test('200: sends an empty array no events are in range', () => {
       return request(app)
-        .get('/events/near/3')
+        .get('/api/events/near/3')
         .expect(200)
         .then(({ body }) => {
           const { events } = body
@@ -383,15 +383,15 @@ describe('/events/near/:user_id', () => {
     })
     test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
       return request(app)
-        .get('/events/near/hello')
+        .get('/api/events/near/hello')
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe('Bad request')
         })
     })
-    test("404: sends an appropriate error if article id is valid but doesn't exist", () => {
+    test("404: sends an appropriate error if id is valid but doesn't exist", () => {
       return request(app)
-        .get('/events/near/34234234')
+        .get('/api/events/near/34234234')
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe('User not found.')
@@ -400,7 +400,7 @@ describe('/events/near/:user_id', () => {
     describe('?distance=num', () => {
       test('200: sends an array of events within the given radius', () => {
         return request(app)
-          .get('/events/near/1?distance=20')
+          .get('/api/events/near/1?distance=20')
           .expect(200)
           .then(({ body }) => {
             const { events } = body
@@ -409,7 +409,7 @@ describe('/events/near/:user_id', () => {
       })
       test('400: sends an appropriate error if distance is invalid (not a number)', () => {
         return request(app)
-          .get('/events/near/1?distance=hello')
+          .get('/api/events/near/1?distance=hello')
           .expect(400)
           .then(({ body }) => {
             expect(body.msg).toBe('Invalid distance query')
@@ -470,5 +470,93 @@ describe('GET/events/:event_id', () => {
       .then((response) => {
         expect(response.body.msg).toBe('Bad request')
       })
+  })
+})
+
+describe('/auctions/user/:user_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of auction objects that the user is involved in', () => {
+      return request(app)
+        .get('/api/auctions/user/2')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(2)
+          auctions.forEach((auction) => {
+            expect(typeof auction.auction_id).toBe('number')
+            expect(typeof auction.event_id).toBe('number')
+            expect(Array.isArray(auction.seat_selection)).toBe(true)
+            expect(typeof auction.current_price).toBe('string')
+            expect(typeof auction.time_started).toBe('string')
+            expect(typeof auction.current_highest_bidder).toBe('number')
+            expect(Array.isArray(auction.users_involved)).toBe(true)
+            expect(auction.users_involved.includes(2)).toBe(true)
+            expect(typeof auction.active).toBe('boolean')
+            expect(typeof auction.bid_counter).toBe('number')
+          })
+        })
+    })
+    test('200: sends an empty array if there are no results', () => {
+      return request(app)
+        .get('/api/auctions/user/5')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(0)
+        })
+    })
+    test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
+      return request(app)
+        .get('/api/auctions/user/hello')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad request')
+        })
+    })
+    test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+      return request(app)
+        .get('/api/auctions/user/234234234')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('User not found.')
+        })
+    })
+    describe('?active=true/false', () => {
+      test('200: sends an array of auctions that are active', () => {
+        return request(app)
+          .get('/api/auctions/user/2?active=true')
+          .expect(200)
+          .then(({ body }) => {
+            const { auctions } = body
+            expect(auctions.length).toBe(1)
+            auctions.forEach((auction) => {
+              expect(auction.active).toBe(true)
+            })
+          })
+      })
+      test('200: sends an array of auctions that are inactive', () => {
+        return request(app)
+          .get('/api/auctions/user/2?active=false')
+          .expect(200)
+          .then(({ body }) => {
+            const { auctions } = body
+            expect(auctions.length).toBe(1)
+            auctions.forEach((auction) => {
+              expect(auction.active).toBe(false)
+            })
+
+          })
+      })
+      test('400: sends an appropriate error if active query is invalid (not true or false)', () => {
+        return request(app)
+          .get('/api/auctions/user/2?active=hello')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid active query')
+          })
+      })
+    })
   })
 })
