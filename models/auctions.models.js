@@ -66,3 +66,29 @@ exports.selectAuctionsWonByUserId = (user_id) => {
       return rows
     })
 }
+
+exports.insertAuction = (auctionData) => {
+  const { event_id, seat_selection, current_price, user_id, time_started, users_involved } = auctionData;
+
+ console.log(current_price, "current price");
+
+  const userIdAsInt = parseInt(user_id);
+
+  if (isNaN(userIdAsInt)) {
+    throw { status: 400, msg: 'Invalid user_id provided' };
+  }
+
+  return db.query(`
+    INSERT INTO auctions (event_id, seat_selection, current_price, users_involved, active, bid_counter, time_started)
+    VALUES ($1, $2, $3, $4, true, 1, $5)
+    RETURNING *
+  `, [event_id, seat_selection, current_price, users_involved, time_started])
+  .then(({ rows }) => {
+    console.log('Auction inserted:', rows[0]);
+    return rows[0];
+  })
+  .catch((err) => {
+    console.error('Error inserting auction:', err);
+    throw { status: 400, msg: 'Invalid auction data' };
+  });
+};
