@@ -154,32 +154,32 @@ describe('GET /api/auctions/:event_id', () => {
   })
 })
 
-describe('PATCH /api/auctions/:event_id', () => {
+describe('PATCH /api/auctions/:auction_id', () => {
   test('200: responds with updated auction details', () => {
     const updatedAuctionDetails = {
-      seat_selection: ['A1', 'A2'],
-      users_involved: ['1', '2', '3', '4', '5'],
-    }
+      current_bid: 5,
+      user_id: 1,
+      bid_counter: 4  
+    };
     return request(app)
       .patch('/api/auctions/1')
       .send(updatedAuctionDetails)
       .expect(200)
       .then(({ body }) => {
-        const { auction } = body
-
+        const { auction } = body;
         expect(auction).toMatchObject({
           auction_id: 1,
           event_id: 1,
-          seat_selection: ['A1', 'A2'],
+          seat_selection: [ 'A1', 'A2' ],
           current_price: '5',
-          current_highest_bidder: 2,
-          users_involved: [1, 2, 3, 4, 5],
+          current_highest_bidder: 1,
+          users_involved: [ 1, 2, 1 ],
           active: false,
-          bid_counter: 3,
-        })
-      })
-  })
-  test('404: responds with error when given a non-existent event_id', () => {
+          bid_counter: 4
+        });
+      });
+  });
+  test('404: responds with error when given a non-existent auction_id', () => {
     return request(app)
       .patch(`/api/auctions/999`)
       .send({ seat_selection: ['A1', 'A2'] })
@@ -188,7 +188,7 @@ describe('PATCH /api/auctions/:event_id', () => {
         expect(body.msg).toBe('Auction not found')
       })
   })
-  test('400: responds with error for invalid event_id', () => {
+  test('400: responds with error for invalid auction_id', () => {
     return request(app)
       .patch(`/api/auctions/abc`)
       .send({ seat_selection: ['A1', 'A2'] })
