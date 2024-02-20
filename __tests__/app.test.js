@@ -942,7 +942,7 @@ describe('POST /api/auctions/:event_id', () => {
     current_price: 10.0,
     user_id: 1,
   };
-  test('should insert a new auction', () => {
+  test('201: should post a new auction successfully ', () => {
     return request(app)
       .post('/api/auctions/1')
       .send(validAuctionData)
@@ -961,6 +961,21 @@ describe('POST /api/auctions/:event_id', () => {
           }
         )
       });
+  });
+  const invalidAuctionData = {
+    event_id: 1,
+    seat_selection: ['A1', 'A2'],
+    time_started: `${d.setHours(d.getHours() + 4)}`,
+    current_price: 10.0,
+  };
+  test('400: displays an error if one of the required values are not included', ()=>{
+    return request(app)
+    .post('/api/auctions/1')
+    .send(invalidAuctionData)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Bad Request: Missing Required Fields')
+    });
   });
 });
 
