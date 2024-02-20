@@ -114,6 +114,7 @@ describe('GET/api/users', () => {
         })
       })
   })
+})
 
 
 describe('PATCH/user/user_id', () => {
@@ -122,7 +123,7 @@ describe('PATCH/user/user_id', () => {
       username: 'smink123',
       postcode: 'B47 5HQ',
       coords: {"x": -1.88381, "y": 52.38532},
-      currently_bidding: null,
+      currently_bidding: false,
       device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
       user_id: 1
     }
