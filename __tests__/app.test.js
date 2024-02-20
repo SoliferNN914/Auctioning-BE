@@ -773,7 +773,7 @@ describe('POST /api/events', () => {
             'E5',
           ],
           active: true,
-          start_price: "4",
+          start_price: '4',
           business_id: 3,
         })
         expect(typeof event.start_time).toBe('string')
