@@ -1,4 +1,4 @@
-const { fetchAllUsers, fetchUserById } = require('../models/users.models')
+const { fetchAllUsers, fetchUserById, changeUserById } = require('../models/users.models')
 
 exports.getAllUsers = (req, res, next) => {
   fetchAllUsers()
@@ -16,6 +16,18 @@ exports.getUserById = (req, res, next) => {
     res.status(200).send({user})
   })
   .catch((err) => {
+    next(err)
+  })
+}
+
+exports.editUserById = (req, res, next) => {
+  const { user_id } = req.params
+  const { device_token } = req.body
+  changeUserById(user_id, device_token).then((updatedUser) => {
+    res.status(200).send({updatedUser})
+  })
+  .catch((err) => {
+    console.log(err)
     next(err)
   })
 }
