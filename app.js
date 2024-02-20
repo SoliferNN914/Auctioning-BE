@@ -44,7 +44,7 @@ app.post('/api/users', postNewUser)
 
 app.get('/api/auctions/:event_id', getAuctionsById)
 app.get('/api/auctions/user/:user_id', getAuctionsByUserInvolved)
-app.patch('/api/auctions/:event_id', patchAuctionsById)
+app.patch('/api/auctions/:auction_id', patchAuctionsById)
 app.get('/api/auctions/won/:user_id', getAuctionsWonByUserId)
 
 app.patch('/api/events/seating/:event_id', patchSeatingById)

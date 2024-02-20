@@ -1,6 +1,8 @@
 const {
   fetchAuctionsById,
-  selectAuctionsByUserInvolved,updateAuctionsById, selectAuctionsWonByUserId
+  selectAuctionsByUserInvolved,
+  updateAuctionsById,
+  selectAuctionsWonByUserId,
 } = require('../models/auctions.models')
 
 exports.getAuctionsById = (req, res, next) => {
@@ -27,14 +29,20 @@ exports.getAuctionsByUserInvolved = (req, res, next) => {
 }
 
 exports.patchAuctionsById = (req, res, next) => {
-    updateAuctionsById(req)
-      .then((auction) => {
-        res.status(200).send({ auction });
-      })
-      .catch((err) => {
-        next(err);
-      });
-  };
+  const { auction_id } = req.params;
+  const { current_bid, user_id } = req.body;
+
+  updateAuctionsById(auction_id, current_bid, user_id)
+    .then((auction) => {
+      if (!auction) {
+        return Promise.reject({ status: 404, msg: 'Auction not found' });
+      }
+      res.status(200).send({ auction });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
   
   exports.getAuctionsWonByUserId = (req, res, next) => {
     const { user_id } = req.params
@@ -46,3 +54,4 @@ exports.patchAuctionsById = (req, res, next) => {
         next(err)
       })
   }
+
