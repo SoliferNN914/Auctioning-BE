@@ -24,6 +24,17 @@ module.exports = [
     bid_counter: 3,
   },
   {
+    event_id: 1,
+    seat_selection: '{B1,B2}',
+    current_bid: 5,
+    time_started: `${auctionStart1}`,
+    time_ending: `${auctionEnd1}`,
+    current_highest_bidder: 3,
+    users_involved: '{3, 2}',
+    active: false,
+    bid_counter: 3,
+  },
+  {
     event_id: 2,
     seat_selection: '{B3}',
     current_bid: 3.5,

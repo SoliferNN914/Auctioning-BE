@@ -1,6 +1,6 @@
 const {
   fetchAuctionsById,
-  selectAuctionsByUserInvolved,updateAuctionsById
+  selectAuctionsByUserInvolved,updateAuctionsById, selectAuctionsWonByUserId
 } = require('../models/auctions.models')
 
 exports.getAuctionsById = (req, res, next) => {
@@ -36,3 +36,14 @@ exports.patchAuctionsById = (req, res, next) => {
       });
   };
   
+  exports.getAuctionsWonByUserId = (req, res, next) => {
+    const { user_id } = req.params
+    selectAuctionsWonByUserId(user_id)
+      .then((auctions) => {
+        res.status(200).send({ auctions })
+      })
+      .catch((err) => {
+        console.log(err)
+        next(err)
+      })
+  }
