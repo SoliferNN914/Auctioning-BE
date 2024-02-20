@@ -214,7 +214,7 @@ describe('GET/api/users/:user_id', () => {
             x: -1.88381,
             y: 52.38532,
           },
-          currently_bidding: null,
+          currently_bidding: false,
           device_token: null,
         }
         expect(user).toEqual(expectedUser)
@@ -482,7 +482,7 @@ describe('/auctions/user/:user_id', () => {
         .then(({ body }) => {
           const { auctions } = body
           expect(Array.isArray(auctions)).toBe(true)
-          expect(auctions.length).toBe(2)
+          expect(auctions.length).toBe(3)
           auctions.forEach((auction) => {
             expect(typeof auction.auction_id).toBe('number')
             expect(typeof auction.event_id).toBe('number')
@@ -542,7 +542,7 @@ describe('/auctions/user/:user_id', () => {
           .expect(200)
           .then(({ body }) => {
             const { auctions } = body
-            expect(auctions.length).toBe(1)
+            expect(auctions.length).toBe(2)
             auctions.forEach((auction) => {
               expect(auction.active).toBe(false)
             })

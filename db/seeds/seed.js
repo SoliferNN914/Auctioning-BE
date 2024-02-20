@@ -96,7 +96,7 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
         username VARCHAR(40) NOT NULL,
         postcode VARCHAR(15),
         coords POINT,
-        currently_bidding BOOLEAN DEFAULT null,
+        currently_bidding BOOLEAN DEFAULT false,
         device_token VARCHAR(350) DEFAULT null
         )`)
     })
