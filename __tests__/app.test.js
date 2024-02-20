@@ -114,8 +114,73 @@ describe('GET/api/users', () => {
         })
       })
   })
-})
 
+
+describe('PATCH/user/user_id', () => {
+  test('200: updates the users device token', () => {
+    const user = {
+      username: 'smink123',
+      postcode: 'B47 5HQ',
+      coords: {"x": -1.88381, "y": 52.38532},
+      currently_bidding: null,
+      device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
+      user_id: 1
+    }
+    return request(app)
+    .patch('/api/users/1')
+    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(200)
+    .then(({body}) => {
+      const {updatedUser} = body
+      expect(updatedUser).toEqual(user)
+    })
+  })
+  test('400: responds with error when invalid value type is given', () => {
+    return request(app)
+    .patch('/api/users/1')
+    .send({device_token: 6546784847377678676565})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('400: responds with error when given an empty string value', () => {
+    return request(app)
+    .patch('/api/users/1')
+    .send({device_token: ''})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('404: responds with error when given a valid, but non-existent user ID', () => {
+    return request(app)
+    .patch('/api/users/1567')
+    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('400: responds with error when given an invalid user ID', () => {
+    return request(app)
+    .patch('/api/users/one')
+    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('400: responds with error when given an invalid key in the patch request', () => {
+    return request(app)
+    .patch('/api/users/2')
+    .send({phone_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+})
 describe('POST /api/users', () => {
   test('201: inserts a new user into the database, returning an object with all of the new user information', () => {
     const userToAdd = {
@@ -218,6 +283,7 @@ describe('POST /api/users', () => {
       .then((response) => {
         expect(response.body.msg).toBe('Bad request')
       })
+
   })
 })
 

@@ -11,9 +11,12 @@ const {
   getAuctionsWonByUserId,
 } = require('./controllers/auctions.controllers')
 
+
+
 const {
   getAllUsers,
   getUserById,
+  editUserById,
   postNewUser,
   patchUserBiddingStatus,
 } = require('./controllers/users.controllers')
@@ -41,6 +44,8 @@ app.get('/api/businesses/:business_id', getBusinessById)
 
 app.get('/api/users', getAllUsers)
 app.get('/api/users/:user_id', getUserById)
+
+app.patch('/api/users/:user_id', editUserById)
 app.post('/api/users', postNewUser)
 app.patch('/api/users/:user_id/bidding', patchUserBiddingStatus)
 
