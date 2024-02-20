@@ -15,6 +15,7 @@ const {
   getAllUsers,
   getUserById,
   postNewUser,
+  patchUserBiddingStatus,
 } = require('./controllers/users.controllers')
 
 const {
@@ -41,6 +42,7 @@ app.get('/api/businesses/:business_id', getBusinessById)
 app.get('/api/users', getAllUsers)
 app.get('/api/users/:user_id', getUserById)
 app.post('/api/users', postNewUser)
+app.patch('/api/users/:user_id/bidding', patchUserBiddingStatus)
 
 app.get('/api/auctions/:event_id', getAuctionsById)
 app.get('/api/auctions/user/:user_id', getAuctionsByUserInvolved)

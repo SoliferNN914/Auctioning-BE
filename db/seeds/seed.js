@@ -102,11 +102,12 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
     })
     .then(() => {
       const insertUsersQueryStr = format(
-        'INSERT INTO users (username, postcode, coords, device_token) VALUES %L;',
-        userData.map(({ username, postcode, coords, device_token }) => [
+        'INSERT INTO users (username, postcode, coords, currently_bidding, device_token) VALUES %L;',
+        userData.map(({ username, postcode, coords, currently_bidding, device_token }) => [
           username,
           postcode,
           coords,
+          currently_bidding,
           device_token,
         ])
       )

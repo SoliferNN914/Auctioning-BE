@@ -2,6 +2,7 @@ const {
   fetchAllUsers,
   fetchUserById,
   addNewUser,
+  updateUserBiddingStatus,
 } = require('../models/users.models')
 const postcodes = require('node-postcodes.io')
 // const db = require('../db/connection')
@@ -58,4 +59,14 @@ exports.postNewUser = (req, res, next) => {
     .catch((err) => {
       next(err)
     })
+}
+
+exports.patchUserBiddingStatus = (req, res, next) => {
+  const {user_id} = req.params
+  updateUserBiddingStatus(user_id).then((user) => {
+    res.status(200).send({user})
+  })
+  .catch((err) => {
+    next(err)
+  })
 }

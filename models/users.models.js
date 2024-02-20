@@ -1,5 +1,6 @@
 const db = require('../db/connection')
 const postcodes = require('node-postcodes.io')
+const { checkExists } = require('../utils/check-exists')
 
 exports.fetchAllUsers = () => {
   return db.query(`SELECT * FROM users`).then((users) => {
@@ -38,5 +39,18 @@ exports.addNewUser = (body, userPostcode) => {
     })
     .then((user) => {
       return user.rows[0]
+    })
+}
+
+exports.updateUserBiddingStatus = (user_id) => {
+  return checkExists('users', 'user_id', user_id, 'User')
+    .then(() => {
+      return db.query(
+        `UPDATE users SET currently_bidding = NOT currently_bidding WHERE user_id = $1 RETURNING *`,
+        [user_id]
+      )
+    })
+    .then(({ rows }) => {
+      return rows[0]
     })
 }
