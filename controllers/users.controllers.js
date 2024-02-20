@@ -1,10 +1,12 @@
+
 const {
   fetchAllUsers,
   fetchUserById,
+   changeUserById,
   addNewUser,
+  updateUserBiddingStatus,
 } = require('../models/users.models')
 const postcodes = require('node-postcodes.io')
-// const db = require('../db/connection')
 const { checkUserExists } = require('../db/utils/userExistsCheck')
 
 exports.getAllUsers = (req, res, next) => {
@@ -28,18 +30,6 @@ exports.getUserById = (req, res, next) => {
     })
 }
 
-// exports.postNewUser = (req, res, next) => {
-//   const { body } = req
-//   addNewUser(body, userPostcode)
-//     .then((user) => {
-//       res.status(201).send({ user })
-//     })
-//     .catch((err) => {
-//       console.log(err)
-//       next(err)
-//     })
-// }
-
 exports.postNewUser = (req, res, next) => {
   const { body } = req
   const userPostcode = body.postcode
@@ -58,4 +48,25 @@ exports.postNewUser = (req, res, next) => {
     .catch((err) => {
       next(err)
     })
+}
+
+exports.patchUserBiddingStatus = (req, res, next) => {
+  const {user_id} = req.params
+  updateUserBiddingStatus(user_id).then((user) => {
+    res.status(200).send({user})
+  })
+  .catch((err) => {
+    next(err)
+  })
+}
+
+exports.editUserById = (req, res, next) => {
+  const { user_id } = req.params
+  const { device_token } = req.body
+  changeUserById(user_id, device_token).then((updatedUser) => {
+    res.status(200).send({updatedUser})
+  })
+  .catch((err) => {
+    next(err)
+  })
 }

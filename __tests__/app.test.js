@@ -116,6 +116,72 @@ describe('GET/api/users', () => {
   })
 })
 
+
+describe('PATCH/user/user_id', () => {
+  test('200: updates the users device token', () => {
+    const user = {
+      username: 'smink123',
+      postcode: 'B47 5HQ',
+      coords: {"x": -1.88381, "y": 52.38532},
+      currently_bidding: false,
+      device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
+      user_id: 1
+    }
+    return request(app)
+    .patch('/api/users/1')
+    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(200)
+    .then(({body}) => {
+      const {updatedUser} = body
+      expect(updatedUser).toEqual(user)
+    })
+  })
+  test('400: responds with error when invalid value type is given', () => {
+    return request(app)
+    .patch('/api/users/1')
+    .send({device_token: 6546784847377678676565})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('400: responds with error when given an empty string value', () => {
+    return request(app)
+    .patch('/api/users/1')
+    .send({device_token: ''})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('404: responds with error when given a valid, but non-existent user ID', () => {
+    return request(app)
+    .patch('/api/users/1567')
+    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('400: responds with error when given an invalid user ID', () => {
+    return request(app)
+    .patch('/api/users/one')
+    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+  test('400: responds with error when given an invalid key in the patch request', () => {
+    return request(app)
+    .patch('/api/users/2')
+    .send({phone_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request");
+    })
+  })
+})
 describe('POST /api/users', () => {
   test('201: inserts a new user into the database, returning an object with all of the new user information', () => {
     const userToAdd = {
@@ -218,6 +284,7 @@ describe('POST /api/users', () => {
       .then((response) => {
         expect(response.body.msg).toBe('Bad request')
       })
+
   })
 })
 
@@ -264,27 +331,27 @@ describe('PATCH /api/auctions/:auction_id', () => {
     const updatedAuctionDetails = {
       current_bid: 5,
       user_id: 1,
-      bid_counter: 4  
-    };
+      bid_counter: 4,
+    }
     return request(app)
       .patch('/api/auctions/1')
       .send(updatedAuctionDetails)
       .expect(200)
       .then(({ body }) => {
-        const { auction } = body;
+        const { auction } = body
         expect(auction).toMatchObject({
           auction_id: 1,
           event_id: 1,
-          seat_selection: [ 'A1', 'A2' ],
+          seat_selection: ['A1', 'A2'],
           current_price: '5',
           current_highest_bidder: 1,
-          users_involved: [ 1, 2, 1 ],
+          users_involved: [1, 2, 1],
           active: false,
-          bid_counter: 4
-        });
-      });
-  });
-  test('PATCH 404: responds with error when given a non-existent auction_id', () => {
+          bid_counter: 4,
+        })
+      })
+  })
+  test('404: responds with error when given a non-existent auction_id', () => {
     return request(app)
       .patch(`/api/auctions/999`)
       .send({ seat_selection: ['A1', 'A2'] })
@@ -896,4 +963,138 @@ describe('POST /api/auctions/:event_id', () => {
       });
   });
 });
+
+describe('PATCH /users/:user_id/bidding', () => {
+  test('200: returns an object of the user with the bidding status true where it was false before', () => {
+    return request(app)
+      .patch('/api/users/1/bidding')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toMatchObject({
+          username: 'smink123',
+          postcode: 'B47 5HQ',
+          coords: { x: -1.88381, y: 52.38532 },
+          device_token: null,
+          currently_bidding: true,
+        })
+      })
+  })
+  test('200: returns an object of the user with the bidding status false where it was true before', () => {
+    return request(app)
+      .patch('/api/users/5/bidding')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toMatchObject({
+          username: 'johnsmith',
+          postcode: 'S10 2HP',
+          coords: { x: -1.48922, y: 53.37919 },
+          device_token: null,
+          currently_bidding: false,
+        })
+      })
+  })
+  test('400: sends an appropriate error if id is invalid', () => {
+    return request(app)
+      .patch('/api/users/hello/bidding')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  })
+  test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+    return request(app)
+      .patch('/api/users/744859587/bidding')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('User not found.')
+      })
+  })
+})
+
+describe('POST /api/businesses', () => {
+  test('201: sends an object of the posted business', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        postcode: 'M20 5PG',
+        seating_layout: [
+          ['A1', 'A2', 'A3', 'A4', 'A5'],
+          ['B1', 'B2', 'B3', 'B4', 'B5'],
+          ['C1', 'C2', 'C3', 'C4', 'C5'],
+          ['D1', 'D2', 'D3', 'D4', 'D5'],
+          ['E1', 'E2', 'E3', 'E4', 'E5'],
+        ],
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { business } = body
+        expect(business).toMatchObject({
+          business_id: 4,
+          business_name: 'manc cineworld',
+          postcode: 'M20 5PG',
+          coords: { x: -2.219511, y: 53.408664 },
+          seating_layout: [
+            ['A1', 'A2', 'A3', 'A4', 'A5'],
+            ['B1', 'B2', 'B3', 'B4', 'B5'],
+            ['C1', 'C2', 'C3', 'C4', 'C5'],
+            ['D1', 'D2', 'D3', 'D4', 'D5'],
+            ['E1', 'E2', 'E3', 'E4', 'E5'],
+          ],
+        })
+      })
+  })
+  test('400: sends an appropriate error if any required keys are empty', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        postcode: '',
+        seating_layout: [
+          ['A1', 'A2', 'A3', 'A4', 'A5'],
+          ['B1', 'B2', 'B3', 'B4', 'B5'],
+          ['C1', 'C2', 'C3', 'C4', 'C5'],
+          ['D1', 'D2', 'D3', 'D4', 'D5'],
+          ['E1', 'E2', 'E3', 'E4', 'E5'],
+        ],
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if available seats is empty', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        postcode: 'M20 5PG',
+        seating_layout: [],
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if any required keys are missing', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        seating_layout: [
+          ['A1', 'A2', 'A3', 'A4', 'A5'],
+          ['B1', 'B2', 'B3', 'B4', 'B5'],
+          ['C1', 'C2', 'C3', 'C4', 'C5'],
+          ['D1', 'D2', 'D3', 'D4', 'D5'],
+          ['E1', 'E2', 'E3', 'E4', 'E5'],
+        ],
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+})
 
