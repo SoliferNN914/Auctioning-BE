@@ -327,7 +327,7 @@ describe('GET /api/auctions/:event_id', () => {
 })
 
 describe('PATCH /api/auctions/:auction_id', () => {
-  test('200: responds with updated auction details', () => {
+  test('PATCH 200: responds with updated auction details', () => {
     const updatedAuctionDetails = {
       current_bid: 5,
       user_id: 1,
@@ -360,7 +360,7 @@ describe('PATCH /api/auctions/:auction_id', () => {
         expect(body.msg).toBe('Auction not found')
       })
   })
-  test('400: responds with error for invalid auction_id', () => {
+  test('PATCH 400: responds with error for invalid auction_id', () => {
     return request(app)
       .patch(`/api/auctions/abc`)
       .send({ seat_selection: ['A1', 'A2'] })
@@ -933,6 +933,37 @@ describe('POST /api/events', () => {
   })
 })
 
+describe('POST /api/auctions/:event_id', () => {
+  const d = new Date()
+  const validAuctionData = {
+    event_id: 1,
+    seat_selection: ['A1', 'A2'],
+    time_started: `${d.setHours(d.getHours() + 4)}`,
+    current_price: 10.0,
+    user_id: 1,
+  };
+  test('should insert a new auction', () => {
+    return request(app)
+      .post('/api/auctions/1')
+      .send(validAuctionData)
+      .expect(201)
+      .then(({ body }) => {
+        const { auction } = body
+        expect(auction).toMatchObject(
+          {
+            auction_id: 6,
+            event_id: 1,
+            seat_selection: [ 'A1', 'A2' ],
+            current_price: "10",
+            users_involved: [ 1 ],
+            active: true,
+            bid_counter: 1
+          }
+        )
+      });
+  });
+});
+
 describe('PATCH /users/:user_id/bidding', () => {
   test('200: returns an object of the user with the bidding status true where it was false before', () => {
     return request(app)
@@ -1066,3 +1097,4 @@ describe('POST /api/businesses', () => {
       })
   })
 })
+
