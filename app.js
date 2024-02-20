@@ -18,6 +18,7 @@ const {
   getEventById,
   getEventsByBusinessId,
   getEventsByUserId,
+  postEvent,
 } = require('./controllers/events.controllers')
 
 const express = require('express')
@@ -44,7 +45,7 @@ app.get('/api/auctions/won/:user_id', getAuctionsWonByUserId)
 app.patch('/api/events/seating/:event_id', patchSeatingById)
 app.get('/api/events/business/:business_id', getEventsByBusinessId)
 app.get('/api/events/near/:user_id', getEventsByUserId)
-
+app.post('/api/events', postEvent)
 app.get('/api/events/:event_id', getEventById)
 
 app.all('*', (req, res, next) => {
