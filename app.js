@@ -48,6 +48,14 @@ app.all('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
+  if (err.msg && err.status ) {
+    res.status(err.status).send({ msg: err.msg })
+  } else {
+    next(err)
+  }
+})
+
+app.use((err, req, res, next) => {
   if (err.status === 404) {
     res.status(404).send({ msg: err.msg })
   } else {
@@ -60,5 +68,13 @@ app.use((err, req, res, next) => {
     res.status(400).send({ msg: 'Bad request' })
   }
 })
+
+// app.use((err, req, res, next) => {
+//   if(err.code === '23505'){
+//       res.status(400).send(({msg: err.detail}))
+//   } else {
+//       next (err)
+//   }
+// })
 
 module.exports = app

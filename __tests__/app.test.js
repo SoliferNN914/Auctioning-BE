@@ -21,18 +21,18 @@ describe('*', () => {
   })
 })
 
-// describe('GET/api', () => {
-//   test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
-//     return fs.readFile('../endpoints.json', 'utf8').then((result) => {
-//       return request(app)
-//         .get('/api')
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.endpoints).toEqual(JSON.parse(result))
-//         })
-//     })
-//   })
-// })
+describe('GET/api', () => {
+  test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
+    return fs.readFile('./endpoints.json', 'utf8').then((result) => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then((response) => {
+          expect(response.body.endpointObject).toEqual(JSON.parse(result))
+        })
+    })
+  })
+})
 
 describe('GET/api/businesses', () => {
   test('200: responds with all businesses with correct details', () => {
@@ -116,12 +116,22 @@ describe('GET/api/users', () => {
   })
 })
 
-describe.only('POST /api/users', () => {
+describe('POST /api/users', () => {
   test('201: inserts a new user into the database, returning an object with all of the new user information', () => {
     const userToAdd = {
       username: 'cinemalover',
       postcode: 'M3 2BW',
+    }
+    const newUser = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
       device_token: null,
+      coords: {
+        "x": -2.246756,
+        "y": 53.482225,
+      },
+      user_id: 5,
+      currently_bidding: null
     }
     return request(app)
       .post('/api/users')
@@ -129,9 +139,63 @@ describe.only('POST /api/users', () => {
       .expect(201)
       .then(({ body }) => {
         const { user } = body
-        expect(user).toEqual(userToAdd)
+        expect(user).toEqual(newUser)
       })
   })
+  test('201: inserts a new user into the database with a device token, returning an object with all of the new user information', () => {
+    const userToAdd = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: '765ABD673'
+    }
+    const newUser = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: '765ABD673',
+      coords: {
+        "x": -2.246756,
+        "y": 53.482225,
+      },
+      user_id: 5,
+      currently_bidding: null
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toEqual(newUser)
+      })
+  })
+  test("POST 400: responds with an error when missing required keys", () => {
+    const userToAdd = {
+      postcode: 'M3 2BW'
+    }
+    return request(app)
+      .post("/api/users")
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Bad request"
+        );
+      });
+  });
+  test("POST 400: responds with an error when given a username that already exists", () => {
+    const userToAdd = {
+      username: 'smink123',
+      postcode: 'B47 5HQ',
+    }
+    return request(app)
+      .post("/api/users")
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        console.log('inside test: ', response)
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
 })
 
 describe('GET /api/auctions/:event_id', () => {

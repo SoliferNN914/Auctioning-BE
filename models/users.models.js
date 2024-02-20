@@ -19,23 +19,21 @@ exports.fetchUserById = (user_id) => {
 }
 
 exports.addNewUser = (body, userPostcode) => {
-  postcodes
-    .lookup(userPostcode)
-    .then((result) => {
-      const longitude = result.result.longitude
-      const latitude = result.result.latitude
-      const longlat = `${longitude}, ${latitude}`
-      return longlat
-    })
-    .then((longlat) => {
-      console.log(longlat)
-      return db.query(
-        `INSERT INTO users (username, postcode, coords) VALUES ($1, $2, $3) RETURNING *`,
-        [body.username, body.postcode, longlat]
-      )
-    })
-    .then((user) => {
-      console.log(user.rows[0])
-      return user.rows[0]
-    })
+    return postcodes
+      .lookup(userPostcode)
+      .then((result) => {
+        const longitude = result.result.longitude
+        const latitude = result.result.latitude
+        const longlat = `${longitude}, ${latitude}`
+        return longlat
+      })
+      .then((longlat) => {
+        return db.query(
+          `INSERT INTO users (username, postcode, coords, device_token) VALUES ($1, $2, $3, $4) RETURNING *`,
+          [body.username, body.postcode, longlat, body.device_token]
+        )
+      })
+      .then((user) => {
+        return user.rows[0]
+      })
 }
