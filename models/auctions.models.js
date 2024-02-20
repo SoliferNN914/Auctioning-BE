@@ -69,8 +69,16 @@ exports.selectAuctionsWonByUserId = (user_id) => {
 
 exports.insertAuction = (auctionData) => {
   const { event_id, seat_selection, current_price, user_id, time_started, users_involved } = auctionData;
-
-
+  if (
+    [event_id, seat_selection, current_price, user_id, time_started, users_involved].some((value) => !value) ||
+    seat_selection.length === 0
+  ) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad Request: Missing Required Fields',
+    })
+  }
+  
   const userIdAsInt = parseInt(user_id);
 
   if (isNaN(userIdAsInt)) {
