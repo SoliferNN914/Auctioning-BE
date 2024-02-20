@@ -865,3 +865,52 @@ describe('POST /api/events', () => {
       })
   })
 })
+
+describe('PATCH /users/:user_id/bidding', () => {
+  test('200: returns an object of the user with the bidding status true where it was false before', () => {
+    return request(app)
+      .patch('/api/users/1/bidding')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toMatchObject( {
+          username: 'smink123',
+          postcode: 'B47 5HQ',
+          coords: { x: -1.88381, y: 52.38532},
+          device_token: null,
+          currently_bidding: true
+        })
+      })
+  })
+  test('200: returns an object of the user with the bidding status false where it was true before', () => {
+    return request(app)
+      .patch('/api/users/5/bidding')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toMatchObject( {
+          username: 'johnsmith',
+          postcode: 'S10 2HP',
+          coords: { x: -1.48922, y: 53.37919},
+          device_token: null,
+          currently_bidding: false
+        })
+      })
+  })
+  test('400: sends an appropriate error if id is invalid', () => {
+    return request(app)
+      .patch('/api/users/hello/bidding')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  })
+  test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+    return request(app)
+      .patch('/api/users/744859587/bidding')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('User not found.')
+      })
+  })
+})
