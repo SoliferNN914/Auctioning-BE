@@ -157,47 +157,47 @@ describe('GET /api/auctions/:event_id', () => {
 describe('PATCH /api/auctions/:event_id', () => {
   test('200: responds with updated auction details', () => {
     const updatedAuctionDetails = {
-      seat_selection: ['A1', 'A2'], 
-      users_involved: ['1', '2', '3', '4', '5']
-    };
+      seat_selection: ['A1', 'A2'],
+      users_involved: ['1', '2', '3', '4', '5'],
+    }
     return request(app)
       .patch('/api/auctions/1')
       .send(updatedAuctionDetails)
       .expect(200)
       .then(({ body }) => {
-        const { auction } = body;
+        const { auction } = body
 
         expect(auction).toMatchObject({
           auction_id: 1,
           event_id: 1,
-          seat_selection: [ 'A1', 'A2' ],
-          current_price: "5",
+          seat_selection: ['A1', 'A2'],
+          current_price: '5',
           current_highest_bidder: 2,
-          users_involved: [ 1, 2, 3, 4, 5 ],
+          users_involved: [1, 2, 3, 4, 5],
           active: false,
-          bid_counter: 3
+          bid_counter: 3,
         })
-      });
-  });
+      })
+  })
   test('404: responds with error when given a non-existent event_id', () => {
     return request(app)
       .patch(`/api/auctions/999`)
       .send({ seat_selection: ['A1', 'A2'] })
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('Auction not found');
-      });
-  });
+        expect(body.msg).toBe('Auction not found')
+      })
+  })
   test('400: responds with error for invalid event_id', () => {
     return request(app)
       .patch(`/api/auctions/abc`)
       .send({ seat_selection: ['A1', 'A2'] })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request');
-      });
-  });
-});
+        expect(body.msg).toBe('Bad request')
+      })
+  })
+})
 
 describe('GET/api/users/:user_id', () => {
   test('200: responds with all user information for the user with given id', () => {
@@ -546,7 +546,6 @@ describe('/auctions/user/:user_id', () => {
             auctions.forEach((auction) => {
               expect(auction.active).toBe(false)
             })
-
           })
       })
       test('400: sends an appropriate error if active query is invalid (not true or false)', () => {
@@ -557,6 +556,58 @@ describe('/auctions/user/:user_id', () => {
             expect(body.msg).toBe('Invalid active query')
           })
       })
+    })
+  })
+})
+
+describe('/auctions/won/:user_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of closed auction objects that the user won', () => {
+      return request(app)
+        .get('/api/auctions/won/3')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(2)
+          auctions.forEach((auction) => {
+            expect(typeof auction.auction_id).toBe('number')
+            expect(typeof auction.event_id).toBe('number')
+            expect(Array.isArray(auction.seat_selection)).toBe(true)
+            expect(typeof auction.current_price).toBe('string')
+            expect(typeof auction.time_started).toBe('string')
+            expect(auction.current_highest_bidder).toBe(3)
+            expect(Array.isArray(auction.users_involved)).toBe(true)
+            expect(auction.active).toBe(false)
+            expect(typeof auction.bid_counter).toBe('number')
+          })
+        })
+    })
+    test('200: sends an empty array if there are no results', () => {
+      return request(app)
+        .get('/api/auctions/won/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(0)
+        })
+    })
+    test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
+      return request(app)
+        .get('/api/auctions/won/hello')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad request')
+        })
+    })
+    test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+      return request(app)
+        .get('/api/auctions/won/234234234')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('User not found.')
+        })
     })
   })
 })

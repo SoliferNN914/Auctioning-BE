@@ -6,7 +6,9 @@ const {
 
 const {
   getAuctionsById,
-  getAuctionsByUserInvolved,patchAuctionsById
+  getAuctionsByUserInvolved,
+  patchAuctionsById,
+  getAuctionsWonByUserId,
 } = require('./controllers/auctions.controllers')
 
 const { getAllUsers, getUserById } = require('./controllers/users.controllers')
@@ -37,6 +39,7 @@ app.get('/api/users/:user_id', getUserById)
 app.get('/api/auctions/:event_id', getAuctionsById)
 app.get('/api/auctions/user/:user_id', getAuctionsByUserInvolved)
 app.patch('/api/auctions/:event_id', patchAuctionsById)
+app.get('/api/auctions/won/:user_id', getAuctionsWonByUserId)
 
 app.patch('/api/events/seating/:event_id', patchSeatingById)
 app.get('/api/events/business/:business_id', getEventsByBusinessId)
