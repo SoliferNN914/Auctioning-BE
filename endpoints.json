@@ -2,12 +2,11 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
-
-  "GET /businesses": {
+  "GET /api/businesses": {
     "description": "serves an array of all businesses",
     "queries": []
   },
-  "GET /users": {
+  "GET /api/users": {
     "description": "serves an array of all users",
     "queries": []
   },
@@ -17,6 +16,62 @@
   },
   "PATCH /api/auctions/:event_id": {
     "description": "seat_selection and users_involved can be patched when selecting auction by event_id",
+    "queries": []
+  },
+  "POST /api/businesses": {
+    "description": "Adds a new business user",
+    "queries": []
+  },
+  "PATCH /api/users/:user_id": {
+    "description": "Updates the users device token with the given token",
+    "queries": []
+  },
+  "PATCH /api/users/:user_id/bidding": {
+    "description": "Updates the currently bidding key on user",
+    "queries": []
+  },
+  "POST /api/users": {
+    "description": "Adds a new user",
+    "queries": []
+  },
+  "POST /api/events": {
+    "description": "Adds a new event using a film API GET request",
+    "queries": []
+  },
+  "GET /api/events": {
+    "description": "Returns an array of event objects. Optional ordering by distance from given coordinates",
+    "queries": ["open", "cinema_id", "distance"]
+  },
+  "GET /api/auctions/won/:user_id": {
+    "description": "Returns an array of auction objects that are no longer active and were won by the user ID given (current_highest_bidder)",
+    "queries": []
+  },
+  "GET /api/auctions/user/:user_id": {
+    "description": "Returns auctions where the user is involved (in the users_involved column)",
+    "queries": ["active"]
+  },
+  "GET /api/events/:event_id": {
+    "description": "Returns an object of an event by a given ID",
+    "queries": []
+  },
+  "GET /api/users/:user_id": {
+    "description": "Returns an object of a user by a given ID",
+    "queries": []
+  },
+  "GET api/businesses/:business_id": {
+    "description": "serves an object of a business by a given ID",
+    "queries": []
+  },
+  "PATCH /api/events/seating/:event_id": {
+    "descripton": "updates an event's seating when an auction ends and the seats are sold",
+    "queries": []
+  },
+  "PATCH /api/auctions/:auction_id": {
+    "description": "updates an active auction with a new bid and bidder",
+    "queries": []
+  },
+  "POST /api/auction/:event_id": {
+    "descripton": "Adds a new auction entry for an event",
     "queries": []
   }
 }
