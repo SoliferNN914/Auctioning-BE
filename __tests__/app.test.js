@@ -130,7 +130,7 @@ describe('POST /api/users', () => {
         x: -2.246756,
         y: 53.482225,
       },
-      user_id: 5,
+      user_id: 6,
       currently_bidding: null,
     }
     return request(app)
@@ -156,7 +156,7 @@ describe('POST /api/users', () => {
         x: -2.246756,
         y: 53.482225,
       },
-      user_id: 5,
+      user_id: 6,
       currently_bidding: null,
     }
     return request(app)
@@ -773,7 +773,7 @@ describe('POST', () => {
             'E5',
           ],
           active: true,
-          start_price: "4",
+          start_price: '4',
           business_id: 3,
         })
         expect(typeof event.start_time).toBe('string')
