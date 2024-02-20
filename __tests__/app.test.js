@@ -130,8 +130,8 @@ describe('POST /api/users', () => {
         x: -2.246756,
         y: 53.482225,
       },
-      user_id: 5,
-      currently_bidding: null,
+      user_id: 6,
+      currently_bidding: false,
     }
     return request(app)
       .post('/api/users')
@@ -156,8 +156,8 @@ describe('POST /api/users', () => {
         x: -2.246756,
         y: 53.482225,
       },
-      user_id: 5,
-      currently_bidding: null,
+      user_id: 6,
+      currently_bidding: false,
     }
     return request(app)
       .post('/api/users')
@@ -319,7 +319,7 @@ describe('GET/api/users/:user_id', () => {
             x: -1.88381,
             y: 52.38532,
           },
-          currently_bidding: null,
+          currently_bidding: false,
           device_token: null,
         }
         expect(user).toEqual(expectedUser)
@@ -717,7 +717,7 @@ describe('/auctions/won/:user_id', () => {
   })
 })
 
-describe('POST', () => {
+describe('POST /api/events', () => {
   test('201: sends an object of the posted event', () => {
     const d = new Date()
     return request(app)
