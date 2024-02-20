@@ -264,26 +264,26 @@ describe('PATCH /api/auctions/:auction_id', () => {
     const updatedAuctionDetails = {
       current_bid: 5,
       user_id: 1,
-      bid_counter: 4  
-    };
+      bid_counter: 4,
+    }
     return request(app)
       .patch('/api/auctions/1')
       .send(updatedAuctionDetails)
       .expect(200)
       .then(({ body }) => {
-        const { auction } = body;
+        const { auction } = body
         expect(auction).toMatchObject({
           auction_id: 1,
           event_id: 1,
-          seat_selection: [ 'A1', 'A2' ],
+          seat_selection: ['A1', 'A2'],
           current_price: '5',
           current_highest_bidder: 1,
-          users_involved: [ 1, 2, 1 ],
+          users_involved: [1, 2, 1],
           active: false,
-          bid_counter: 4
-        });
-      });
-  });
+          bid_counter: 4,
+        })
+      })
+  })
   test('404: responds with error when given a non-existent auction_id', () => {
     return request(app)
       .patch(`/api/auctions/999`)
@@ -873,12 +873,12 @@ describe('PATCH /users/:user_id/bidding', () => {
       .expect(200)
       .then(({ body }) => {
         const { user } = body
-        expect(user).toMatchObject( {
+        expect(user).toMatchObject({
           username: 'smink123',
           postcode: 'B47 5HQ',
-          coords: { x: -1.88381, y: 52.38532},
+          coords: { x: -1.88381, y: 52.38532 },
           device_token: null,
-          currently_bidding: true
+          currently_bidding: true,
         })
       })
   })
@@ -888,12 +888,12 @@ describe('PATCH /users/:user_id/bidding', () => {
       .expect(200)
       .then(({ body }) => {
         const { user } = body
-        expect(user).toMatchObject( {
+        expect(user).toMatchObject({
           username: 'johnsmith',
           postcode: 'S10 2HP',
-          coords: { x: -1.48922, y: 53.37919},
+          coords: { x: -1.48922, y: 53.37919 },
           device_token: null,
-          currently_bidding: false
+          currently_bidding: false,
         })
       })
   })
@@ -911,6 +911,91 @@ describe('PATCH /users/:user_id/bidding', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('User not found.')
+      })
+  })
+})
+
+describe('POST /api/businesses', () => {
+  test('201: sends an object of the posted business', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        postcode: 'M20 5PG',
+        seating_layout: [
+          ['A1', 'A2', 'A3', 'A4', 'A5'],
+          ['B1', 'B2', 'B3', 'B4', 'B5'],
+          ['C1', 'C2', 'C3', 'C4', 'C5'],
+          ['D1', 'D2', 'D3', 'D4', 'D5'],
+          ['E1', 'E2', 'E3', 'E4', 'E5'],
+        ],
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { business } = body
+        expect(business).toMatchObject({
+          business_id: 4,
+          business_name: 'manc cineworld',
+          postcode: 'M20 5PG',
+          coords: { x: -2.219511, y: 53.408664 },
+          seating_layout: [
+            ['A1', 'A2', 'A3', 'A4', 'A5'],
+            ['B1', 'B2', 'B3', 'B4', 'B5'],
+            ['C1', 'C2', 'C3', 'C4', 'C5'],
+            ['D1', 'D2', 'D3', 'D4', 'D5'],
+            ['E1', 'E2', 'E3', 'E4', 'E5'],
+          ],
+        })
+      })
+  })
+  test('400: sends an appropriate error if any required keys are empty', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        postcode: '',
+        seating_layout: [
+          ['A1', 'A2', 'A3', 'A4', 'A5'],
+          ['B1', 'B2', 'B3', 'B4', 'B5'],
+          ['C1', 'C2', 'C3', 'C4', 'C5'],
+          ['D1', 'D2', 'D3', 'D4', 'D5'],
+          ['E1', 'E2', 'E3', 'E4', 'E5'],
+        ],
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if available seats is empty', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        postcode: 'M20 5PG',
+        seating_layout: [],
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if any required keys are missing', () => {
+    return request(app)
+      .post('/api/businesses/')
+      .send({
+        business_name: 'manc cineworld',
+        seating_layout: [
+          ['A1', 'A2', 'A3', 'A4', 'A5'],
+          ['B1', 'B2', 'B3', 'B4', 'B5'],
+          ['C1', 'C2', 'C3', 'C4', 'C5'],
+          ['D1', 'D2', 'D3', 'D4', 'D5'],
+          ['E1', 'E2', 'E3', 'E4', 'E5'],
+        ],
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
       })
   })
 })
