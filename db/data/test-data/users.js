@@ -27,4 +27,11 @@ module.exports = [
     currently_bidding: null,
     device_token: null,
   },
+  {
+    username: 'johnsmith',
+    postcode: 'S10 2HP',
+    coords: '-1.48922, 53.37919',
+    currently_bidding: null,
+    device_token: null,
+  },
 ]

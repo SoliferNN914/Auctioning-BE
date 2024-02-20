@@ -118,7 +118,7 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
         auction_id SERIAL PRIMARY KEY,
         event_id INT REFERENCES events(event_id),
         seat_selection TEXT[],
-        current_price INT,
+        current_price DECIMAL,
         time_started VARCHAR(350),
         time_ending VARCHAR(350),
         current_highest_bidder INT REFERENCES users(user_id),
@@ -134,7 +134,7 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
           ({
             event_id,
             seat_selection,
-            current_price,
+            current_bid,
             time_started,
             time_ending,
             current_highest_bidder,
@@ -144,7 +144,7 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
           }) => [
             event_id,
             seat_selection,
-            current_price,
+            current_bid,
             time_started,
             time_ending,
             current_highest_bidder,
