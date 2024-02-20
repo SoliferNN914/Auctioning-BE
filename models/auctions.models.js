@@ -70,7 +70,6 @@ exports.selectAuctionsWonByUserId = (user_id) => {
 exports.insertAuction = (auctionData) => {
   const { event_id, seat_selection, current_price, user_id, time_started, users_involved } = auctionData;
 
- console.log(current_price, "current price");
 
   const userIdAsInt = parseInt(user_id);
 
@@ -84,11 +83,10 @@ exports.insertAuction = (auctionData) => {
     RETURNING *
   `, [event_id, seat_selection, current_price, users_involved, time_started])
   .then(({ rows }) => {
-    console.log('Auction inserted:', rows[0]);
+
     return rows[0];
   })
   .catch((err) => {
-    console.error('Error inserting auction:', err);
     throw { status: 400, msg: 'Invalid auction data' };
   });
 };
