@@ -12,22 +12,28 @@ exports.fetchAuctionsById = (event_id) => {
     })
 }
 
-exports.updateAuctionsById = (req) => {
-  const { event_id } = req.params
-  const { seat_selection, users_involved } = req.body
-
+exports.updateAuctionsById = (auction_id, current_bid, user_id) => {
   return db
-    .query(
-      `UPDATE auctions SET seat_selection = $1, users_involved = $2 WHERE event_id = $3 RETURNING *`,
-      [seat_selection, users_involved, event_id]
-    )
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        throw { status: 404, msg: 'Auction not found' }
-      }
-      return rows[0]
+    .query(`SELECT * FROM auctions WHERE auction_id = $1 AND active = true`, [auction_id])
+    .then(() => {
+
+
+      return db.query(
+        `UPDATE auctions 
+          SET current_price = $1, 
+              current_highest_bidder = $2,
+              bid_counter = bid_counter + 1,
+              users_involved = array_append(users_involved, $2)
+          WHERE auction_id = $3
+          RETURNING *`,
+        [current_bid, user_id, auction_id]
+      );
     })
-}
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
 
 exports.selectAuctionsByUserInvolved = (user_id, active) => {
   if (active && !['true', 'false'].includes(active.toLowerCase())) {

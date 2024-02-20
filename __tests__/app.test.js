@@ -21,18 +21,18 @@ describe('*', () => {
   })
 })
 
-// describe('GET/api', () => {
-//   test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
-//     return fs.readFile('../endpoints.json', 'utf8').then((result) => {
-//       return request(app)
-//         .get('/api')
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.endpoints).toEqual(JSON.parse(result))
-//         })
-//     })
-//   })
-// })
+describe('GET/api', () => {
+  test('200: when calling the api as the endpoint, return an object containing all of the endpoint information for every endpoint tested in app.js', () => {
+    return fs.readFile('./endpoints.json', 'utf8').then((result) => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then((response) => {
+          expect(response.body.endpointObject).toEqual(JSON.parse(result))
+        })
+    })
+  })
+})
 
 describe('GET/api/businesses', () => {
   test('200: responds with all businesses with correct details', () => {
@@ -114,7 +114,7 @@ describe('GET/api/users', () => {
         })
       })
   })
-})
+
 
 describe('PATCH/user/user_id', () => {
   test('200: updates the users device token', () => {
@@ -171,7 +171,7 @@ describe('PATCH/user/user_id', () => {
       expect(body.msg).toBe("Bad request");
     })
   })
-  test.only('400: responds with error when given an invalid key in the patch request', () => {
+  test('400: responds with error when given an invalid key in the patch request', () => {
     return request(app)
     .patch('/api/users/2')
     .send({phone_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
@@ -179,6 +179,111 @@ describe('PATCH/user/user_id', () => {
     .then(({body}) => {
       expect(body.msg).toBe("Bad request");
     })
+  })
+})
+describe('POST /api/users', () => {
+  test('201: inserts a new user into the database, returning an object with all of the new user information', () => {
+    const userToAdd = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+    }
+    const newUser = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: null,
+      coords: {
+        x: -2.246756,
+        y: 53.482225,
+      },
+      user_id: 6,
+      currently_bidding: false,
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toEqual(newUser)
+      })
+  })
+  test('201: inserts a new user into the database with a device token, returning an object with all of the new user information', () => {
+    const userToAdd = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: '765ABD673',
+    }
+    const newUser = {
+      username: 'cinemalover',
+      postcode: 'M3 2BW',
+      device_token: '765ABD673',
+      coords: {
+        x: -2.246756,
+        y: 53.482225,
+      },
+      user_id: 6,
+      currently_bidding: false,
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toEqual(newUser)
+      })
+  })
+  test('POST 400: responds with an error when missing required keys', () => {
+    const userToAdd = {
+      postcode: 'M3 2BW',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with an error when given a username that already exists', () => {
+    const userToAdd = {
+      username: 'smink123',
+      postcode: 'B47 5HQ',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with a bad request error when any of the keys are incorrectly named', () => {
+    const userToAdd = {
+      name: 'smink123',
+      city: 'B47 5HQ',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with a bad request error when any of the values are empty strings', () => {
+    const userToAdd = {
+      username: '',
+      postcode: '',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+
   })
 })
 
@@ -220,32 +325,32 @@ describe('GET /api/auctions/:event_id', () => {
   })
 })
 
-describe('PATCH /api/auctions/:event_id', () => {
+describe('PATCH /api/auctions/:auction_id', () => {
   test('200: responds with updated auction details', () => {
     const updatedAuctionDetails = {
-      seat_selection: ['A1', 'A2'],
-      users_involved: ['1', '2', '3', '4', '5'],
-    }
+      current_bid: 5,
+      user_id: 1,
+      bid_counter: 4  
+    };
     return request(app)
       .patch('/api/auctions/1')
       .send(updatedAuctionDetails)
       .expect(200)
       .then(({ body }) => {
-        const { auction } = body
-
+        const { auction } = body;
         expect(auction).toMatchObject({
           auction_id: 1,
           event_id: 1,
-          seat_selection: ['A1', 'A2'],
+          seat_selection: [ 'A1', 'A2' ],
           current_price: '5',
-          current_highest_bidder: 2,
-          users_involved: [1, 2, 3, 4, 5],
+          current_highest_bidder: 1,
+          users_involved: [ 1, 2, 1 ],
           active: false,
-          bid_counter: 3,
-        })
-      })
-  })
-  test('404: responds with error when given a non-existent event_id', () => {
+          bid_counter: 4
+        });
+      });
+  });
+  test('404: responds with error when given a non-existent auction_id', () => {
     return request(app)
       .patch(`/api/auctions/999`)
       .send({ seat_selection: ['A1', 'A2'] })
@@ -254,7 +359,7 @@ describe('PATCH /api/auctions/:event_id', () => {
         expect(body.msg).toBe('Auction not found')
       })
   })
-  test('400: responds with error for invalid event_id', () => {
+  test('400: responds with error for invalid auction_id', () => {
     return request(app)
       .patch(`/api/auctions/abc`)
       .send({ seat_selection: ['A1', 'A2'] })
@@ -280,7 +385,7 @@ describe('GET/api/users/:user_id', () => {
             x: -1.88381,
             y: 52.38532,
           },
-          currently_bidding: null,
+          currently_bidding: false,
           device_token: null,
         }
         expect(user).toEqual(expectedUser)
@@ -548,7 +653,7 @@ describe('/auctions/user/:user_id', () => {
         .then(({ body }) => {
           const { auctions } = body
           expect(Array.isArray(auctions)).toBe(true)
-          expect(auctions.length).toBe(2)
+          expect(auctions.length).toBe(3)
           auctions.forEach((auction) => {
             expect(typeof auction.auction_id).toBe('number')
             expect(typeof auction.event_id).toBe('number')
@@ -608,7 +713,7 @@ describe('/auctions/user/:user_id', () => {
           .expect(200)
           .then(({ body }) => {
             const { auctions } = body
-            expect(auctions.length).toBe(1)
+            expect(auctions.length).toBe(2)
             auctions.forEach((auction) => {
               expect(auction.active).toBe(false)
             })
@@ -675,5 +780,203 @@ describe('/auctions/won/:user_id', () => {
           expect(body.msg).toBe('User not found.')
         })
     })
+  })
+})
+
+describe('POST /api/events', () => {
+  test('201: sends an object of the posted event', () => {
+    const d = new Date()
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3,
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { event } = body
+        expect(event).toMatchObject({
+          event_id: 6,
+          film_title: 'Poor Things',
+          poster:
+            'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+          certificate: '15',
+          run_time: 141,
+          available_seats: [
+            'A2',
+            'A5',
+            'B1',
+            'B2',
+            'C1',
+            'C2',
+            'D3',
+            'D4',
+            'D5',
+            'E1',
+            'E2',
+            'E4',
+            'E5',
+          ],
+          active: true,
+          start_price: '4',
+          business_id: 3,
+        })
+        expect(typeof event.start_time).toBe('string')
+      })
+  })
+  test("404: sends an appropriate error if the business doesn't exist", () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3435345,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Business not found.')
+      })
+  })
+  test('400: sends an appropriate error if any required keys are empty or missing(all)', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if available seats is empty', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '454',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+})
+
+describe('PATCH /users/:user_id/bidding', () => {
+  test('200: returns an object of the user with the bidding status true where it was false before', () => {
+    return request(app)
+      .patch('/api/users/1/bidding')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toMatchObject( {
+          username: 'smink123',
+          postcode: 'B47 5HQ',
+          coords: { x: -1.88381, y: 52.38532},
+          device_token: null,
+          currently_bidding: true
+        })
+      })
+  })
+  test('200: returns an object of the user with the bidding status false where it was true before', () => {
+    return request(app)
+      .patch('/api/users/5/bidding')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body
+        expect(user).toMatchObject( {
+          username: 'johnsmith',
+          postcode: 'S10 2HP',
+          coords: { x: -1.48922, y: 53.37919},
+          device_token: null,
+          currently_bidding: false
+        })
+      })
+  })
+  test('400: sends an appropriate error if id is invalid', () => {
+    return request(app)
+      .patch('/api/users/hello/bidding')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  })
+  test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+    return request(app)
+      .patch('/api/users/744859587/bidding')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('User not found.')
+      })
   })
 })

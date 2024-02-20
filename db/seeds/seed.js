@@ -96,17 +96,18 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
         username VARCHAR(40) NOT NULL,
         postcode VARCHAR(15),
         coords POINT,
-        currently_bidding BOOLEAN DEFAULT null,
+        currently_bidding BOOLEAN DEFAULT false,
         device_token VARCHAR(350) DEFAULT null
         )`)
     })
     .then(() => {
       const insertUsersQueryStr = format(
-        'INSERT INTO users (username, postcode, coords, device_token) VALUES %L;',
-        userData.map(({ username, postcode, coords, device_token }) => [
+        'INSERT INTO users (username, postcode, coords, currently_bidding, device_token) VALUES %L;',
+        userData.map(({ username, postcode, coords, currently_bidding, device_token }) => [
           username,
           postcode,
           coords,
+          currently_bidding,
           device_token,
         ])
       )
