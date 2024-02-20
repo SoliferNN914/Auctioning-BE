@@ -1,4 +1,10 @@
-const { updateSeatingById, fetchEventById } = require('../models/events.models')
+const {
+  updateSeatingById,
+  fetchEventById,
+  selectEventsByBusinessId,
+  selectEventsByUserId,
+  insertNewEvent,
+} = require('../models/events.models')
 
 exports.patchSeatingById = (req, res, next) => {
   const { event_id } = req.params
@@ -17,6 +23,41 @@ exports.getEventById = (req, res, next) => {
   fetchEventById(event_id)
     .then((event) => {
       res.status(200).send({ event })
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.getEventsByBusinessId = (req, res, next) => {
+  const { business_id } = req.params
+  const { active } = req.query
+  selectEventsByBusinessId(active, business_id)
+    .then((events) => {
+      res.status(200).send({ events })
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.getEventsByUserId = (req, res, next) => {
+  const { user_id } = req.params
+  const { distance } = req.query
+  selectEventsByUserId(distance, user_id)
+    .then((events) => {
+      res.status(200).send({ events })
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.postEvent = (req, res, next) => {
+  const new_event = req.body
+  insertNewEvent(new_event)
+    .then((event) => {
+      res.status(201).send({ event })
     })
     .catch((err) => {
       next(err)

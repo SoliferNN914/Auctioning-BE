@@ -65,8 +65,8 @@ describe('GET/api/businesses/:business_id', () => {
           business_name: 'odeon',
           postcode: 'B16 8LP',
           coords: {
-            x: 52.47399,
-            y: -1.92048,
+            x: -1.92048,
+            y: 52.47399,
           },
           seating_layout: [
             ['A1', 'A2', 'A3', 'A4'],
@@ -103,7 +103,7 @@ describe('GET/api/users', () => {
       .expect(200)
       .then(({ body }) => {
         const { users } = body
-        expect(users.length).toBe(4)
+        expect(users.length).toBe(5)
         users.forEach((user) => {
           expect(typeof user.user_id).toBe('number')
           expect(typeof user.username).toBe('string')
@@ -259,6 +259,51 @@ describe('GET /api/auctions/:event_id', () => {
   })
 })
 
+describe('PATCH /api/auctions/:event_id', () => {
+  test('200: responds with updated auction details', () => {
+    const updatedAuctionDetails = {
+      seat_selection: ['A1', 'A2'],
+      users_involved: ['1', '2', '3', '4', '5'],
+    }
+    return request(app)
+      .patch('/api/auctions/1')
+      .send(updatedAuctionDetails)
+      .expect(200)
+      .then(({ body }) => {
+        const { auction } = body
+
+        expect(auction).toMatchObject({
+          auction_id: 1,
+          event_id: 1,
+          seat_selection: ['A1', 'A2'],
+          current_price: '5',
+          current_highest_bidder: 2,
+          users_involved: [1, 2, 3, 4, 5],
+          active: false,
+          bid_counter: 3,
+        })
+      })
+  })
+  test('404: responds with error when given a non-existent event_id', () => {
+    return request(app)
+      .patch(`/api/auctions/999`)
+      .send({ seat_selection: ['A1', 'A2'] })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Auction not found')
+      })
+  })
+  test('400: responds with error for invalid event_id', () => {
+    return request(app)
+      .patch(`/api/auctions/abc`)
+      .send({ seat_selection: ['A1', 'A2'] })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  })
+})
+
 describe('GET/api/users/:user_id', () => {
   test('200: responds with all user information for the user with given id', () => {
     return request(app)
@@ -271,8 +316,8 @@ describe('GET/api/users/:user_id', () => {
           username: 'smink123',
           postcode: 'B47 5HQ',
           coords: {
-            x: 52.38532,
-            y: -1.88381,
+            x: -1.88381,
+            y: 52.38532,
           },
           currently_bidding: null,
           device_token: null,
@@ -350,6 +395,135 @@ describe('PATCH/events/seating/:event_id', () => {
   })
 })
 
+describe('/events/business/:business_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of events objects associated with the given and with the correct properties', () => {
+      return request(app)
+        .get('/api/events/business/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { events } = body
+          expect(Array.isArray(events)).toBe(true)
+          events.forEach((event) => {
+            expect(typeof event.event_id).toBe('number')
+            expect(typeof event.film_title).toBe('string')
+            expect(typeof event.poster).toBe('string')
+            expect(typeof event.certificate).toBe('string')
+            expect(typeof event.run_time).toBe('number')
+            expect(Array.isArray(event.available_seats)).toBe(true)
+            expect(typeof event.active).toBe('boolean')
+            expect(typeof event.start_price).toBe('string')
+            expect(typeof event.business_id).toBe('number')
+          })
+        })
+    })
+    describe('?active=true/false', () => {
+      test('200: sends an array of only active events', () => {
+        return request(app)
+          .get('/api/events/business/1?active=true')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            events.forEach((event) => {
+              expect(event.active).toBe(true)
+            })
+          })
+      })
+      test('200: sends an array of only inactive events', () => {
+        return request(app)
+          .get('/api/events/business/1?active=false')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            events.forEach((event) => {
+              expect(event.active).toBe(false)
+            })
+          })
+      })
+      test('400: sends an appropriate error if active is invalid', () => {
+        return request(app)
+          .get('/api/events/business/1?active=hello')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid active query')
+          })
+      })
+    })
+  })
+})
+
+describe('/events/near/:user_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of active events objects with the correct properties, sorted by distance from the given user, under 8 miles by default', () => {
+      return request(app)
+        .get('/api/events/near/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { events } = body
+          expect(Array.isArray(events)).toBe(true)
+          expect(events).toBeSortedBy('distance_in_miles')
+          events.forEach((event) => {
+            expect(event.distance_in_miles).toBeLessThan(8)
+            expect(typeof event.event_id).toBe('number')
+            expect(typeof event.film_title).toBe('string')
+            expect(typeof event.poster).toBe('string')
+            expect(typeof event.certificate).toBe('string')
+            expect(typeof event.run_time).toBe('number')
+            expect(Array.isArray(event.available_seats)).toBe(true)
+            expect(event.active).toBe(true)
+            expect(typeof event.start_price).toBe('string')
+            expect(typeof event.business_id).toBe('number')
+          })
+        })
+    })
+    test('200: sends an empty array no events are in range', () => {
+      return request(app)
+        .get('/api/events/near/3')
+        .expect(200)
+        .then(({ body }) => {
+          const { events } = body
+          expect(Array.isArray(events)).toBe(true)
+          expect(events.length).toBe(0)
+        })
+    })
+    test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
+      return request(app)
+        .get('/api/events/near/hello')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad request')
+        })
+    })
+    test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+      return request(app)
+        .get('/api/events/near/34234234')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('User not found.')
+        })
+    })
+    describe('?distance=num', () => {
+      test('200: sends an array of events within the given radius', () => {
+        return request(app)
+          .get('/api/events/near/1?distance=20')
+          .expect(200)
+          .then(({ body }) => {
+            const { events } = body
+            expect(events.length).toBe(4)
+          })
+      })
+      test('400: sends an appropriate error if distance is invalid (not a number)', () => {
+        return request(app)
+          .get('/api/events/near/1?distance=hello')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid distance query')
+          })
+      })
+    })
+  })
+})
+
 describe('GET/events/:event_id', () => {
   test('200: responds with all event information for the event with given id', () => {
     return request(app)
@@ -400,6 +574,294 @@ describe('GET/events/:event_id', () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad request')
+      })
+  })
+})
+
+describe('/auctions/user/:user_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of auction objects that the user is involved in', () => {
+      return request(app)
+        .get('/api/auctions/user/2')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(3)
+          auctions.forEach((auction) => {
+            expect(typeof auction.auction_id).toBe('number')
+            expect(typeof auction.event_id).toBe('number')
+            expect(Array.isArray(auction.seat_selection)).toBe(true)
+            expect(typeof auction.current_price).toBe('string')
+            expect(typeof auction.time_started).toBe('string')
+            expect(typeof auction.current_highest_bidder).toBe('number')
+            expect(Array.isArray(auction.users_involved)).toBe(true)
+            expect(auction.users_involved.includes(2)).toBe(true)
+            expect(typeof auction.active).toBe('boolean')
+            expect(typeof auction.bid_counter).toBe('number')
+          })
+        })
+    })
+    test('200: sends an empty array if there are no results', () => {
+      return request(app)
+        .get('/api/auctions/user/5')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(0)
+        })
+    })
+    test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
+      return request(app)
+        .get('/api/auctions/user/hello')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad request')
+        })
+    })
+    test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+      return request(app)
+        .get('/api/auctions/user/234234234')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('User not found.')
+        })
+    })
+    describe('?active=true/false', () => {
+      test('200: sends an array of auctions that are active', () => {
+        return request(app)
+          .get('/api/auctions/user/2?active=true')
+          .expect(200)
+          .then(({ body }) => {
+            const { auctions } = body
+            expect(auctions.length).toBe(1)
+            auctions.forEach((auction) => {
+              expect(auction.active).toBe(true)
+            })
+          })
+      })
+      test('200: sends an array of auctions that are inactive', () => {
+        return request(app)
+          .get('/api/auctions/user/2?active=false')
+          .expect(200)
+          .then(({ body }) => {
+            const { auctions } = body
+            expect(auctions.length).toBe(2)
+            auctions.forEach((auction) => {
+              expect(auction.active).toBe(false)
+            })
+          })
+      })
+      test('400: sends an appropriate error if active query is invalid (not true or false)', () => {
+        return request(app)
+          .get('/api/auctions/user/2?active=hello')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid active query')
+          })
+      })
+    })
+  })
+})
+
+describe('/auctions/won/:user_id', () => {
+  describe('GET', () => {
+    test('200: sends an array of closed auction objects that the user won', () => {
+      return request(app)
+        .get('/api/auctions/won/3')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(2)
+          auctions.forEach((auction) => {
+            expect(typeof auction.auction_id).toBe('number')
+            expect(typeof auction.event_id).toBe('number')
+            expect(Array.isArray(auction.seat_selection)).toBe(true)
+            expect(typeof auction.current_price).toBe('string')
+            expect(typeof auction.time_started).toBe('string')
+            expect(auction.current_highest_bidder).toBe(3)
+            expect(Array.isArray(auction.users_involved)).toBe(true)
+            expect(auction.active).toBe(false)
+            expect(typeof auction.bid_counter).toBe('number')
+          })
+        })
+    })
+    test('200: sends an empty array if there are no results', () => {
+      return request(app)
+        .get('/api/auctions/won/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { auctions } = body
+          expect(Array.isArray(auctions)).toBe(true)
+          expect(auctions.length).toBe(0)
+        })
+    })
+    test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
+      return request(app)
+        .get('/api/auctions/won/hello')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad request')
+        })
+    })
+    test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+      return request(app)
+        .get('/api/auctions/won/234234234')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('User not found.')
+        })
+    })
+  })
+})
+
+describe('POST', () => {
+  test('201: sends an object of the posted event', () => {
+    const d = new Date()
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3,
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { event } = body
+        expect(event).toMatchObject({
+          event_id: 6,
+          film_title: 'Poor Things',
+          poster:
+            'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+          certificate: '15',
+          run_time: 141,
+          available_seats: [
+            'A2',
+            'A5',
+            'B1',
+            'B2',
+            'C1',
+            'C2',
+            'D3',
+            'D4',
+            'D5',
+            'E1',
+            'E2',
+            'E4',
+            'E5',
+          ],
+          active: true,
+          start_price: "4",
+          business_id: 3,
+        })
+        expect(typeof event.start_time).toBe('string')
+      })
+  })
+  test("404: sends an appropriate error if the business doesn't exist", () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '141',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 3435345,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Business not found.')
+      })
+  })
+  test('400: sends an appropriate error if any required keys are empty or missing(all)', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [
+          'A2',
+          'A5',
+          'B1',
+          'B2',
+          'C1',
+          'C2',
+          'D3',
+          'D4',
+          'D5',
+          'E1',
+          'E2',
+          'E4',
+          'E5',
+        ],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('400: sends an appropriate error if available seats is empty', () => {
+    return request(app)
+      .post('/api/events/')
+      .send({
+        film_title: 'Poor Things',
+        poster:
+          'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
+        certificate: '15',
+        run_time: '454',
+        start_time: `${d.setHours(d.getHours() + 4)}`,
+        available_seats: [],
+        start_price: 4,
+        business_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
       })
   })
 })

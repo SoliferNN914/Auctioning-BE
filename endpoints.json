@@ -10,5 +10,13 @@
   "GET /users": {
     "description": "serves an array of all users",
     "queries": []
+  },
+  "GET /api/auctions/:event_id": {
+    "description": "serves an array of auctions associated with event_id",
+    "queries": []
+  },
+  "PATCH /api/auctions/:event_id": {
+    "description": "seat_selection and users_involved can be patched when selecting auction by event_id",
+    "queries": []
   }
 }
