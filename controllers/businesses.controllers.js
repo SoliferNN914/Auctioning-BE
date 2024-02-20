@@ -1,6 +1,7 @@
 const {
   fetchAllBusinesses,
   fetchBusinessById,
+  insertBusiness,
 } = require('../models/businesses.models')
 
 exports.getAllBusinesses = (req, res, next) => {
@@ -18,6 +19,17 @@ exports.getBusinessById = (req, res, next) => {
   fetchBusinessById(business_id)
     .then((business) => {
       res.status(200).send({ business })
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.postBusiness = (req, res, next) => {
+  const new_business = req.body
+  insertBusiness(new_business)
+    .then((business) => {
+      res.status(201).send({ business })
     })
     .catch((err) => {
       next(err)
