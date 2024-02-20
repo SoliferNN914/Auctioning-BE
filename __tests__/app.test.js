@@ -127,11 +127,11 @@ describe('POST /api/users', () => {
       postcode: 'M3 2BW',
       device_token: null,
       coords: {
-        "x": -2.246756,
-        "y": 53.482225,
+        x: -2.246756,
+        y: 53.482225,
       },
       user_id: 5,
-      currently_bidding: null
+      currently_bidding: null,
     }
     return request(app)
       .post('/api/users')
@@ -146,18 +146,18 @@ describe('POST /api/users', () => {
     const userToAdd = {
       username: 'cinemalover',
       postcode: 'M3 2BW',
-      device_token: '765ABD673'
+      device_token: '765ABD673',
     }
     const newUser = {
       username: 'cinemalover',
       postcode: 'M3 2BW',
       device_token: '765ABD673',
       coords: {
-        "x": -2.246756,
-        "y": 53.482225,
+        x: -2.246756,
+        y: 53.482225,
       },
       user_id: 5,
-      currently_bidding: null
+      currently_bidding: null,
     }
     return request(app)
       .post('/api/users')
@@ -168,34 +168,57 @@ describe('POST /api/users', () => {
         expect(user).toEqual(newUser)
       })
   })
-  test("POST 400: responds with an error when missing required keys", () => {
+  test('POST 400: responds with an error when missing required keys', () => {
     const userToAdd = {
-      postcode: 'M3 2BW'
+      postcode: 'M3 2BW',
     }
     return request(app)
-      .post("/api/users")
+      .post('/api/users')
       .send(userToAdd)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe(
-          "Bad request"
-        );
-      });
-  });
-  test("POST 400: responds with an error when given a username that already exists", () => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with an error when given a username that already exists', () => {
     const userToAdd = {
       username: 'smink123',
       postcode: 'B47 5HQ',
     }
     return request(app)
-      .post("/api/users")
+      .post('/api/users')
       .send(userToAdd)
       .expect(400)
       .then((response) => {
-        console.log('inside test: ', response)
-        expect(response.body.msg).toBe("Bad request");
-      });
-  });
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with a bad request error when any of the keys are incorrectly named', () => {
+    const userToAdd = {
+      name: 'smink123',
+      city: 'B47 5HQ',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+  test('POST 400: responds with a bad request error when any of the values are empty strings', () => {
+    const userToAdd = {
+      username: '',
+      postcode: '',
+    }
+    return request(app)
+      .post('/api/users')
+      .send(userToAdd)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
 })
 
 describe('GET /api/auctions/:event_id', () => {

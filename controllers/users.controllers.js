@@ -7,8 +7,6 @@ const postcodes = require('node-postcodes.io')
 // const db = require('../db/connection')
 const { checkUserExists } = require('../db/utils/userExistsCheck')
 
-
-
 exports.getAllUsers = (req, res, next) => {
   fetchAllUsers()
     .then((users) => {
@@ -30,7 +28,6 @@ exports.getUserById = (req, res, next) => {
     })
 }
 
-
 // exports.postNewUser = (req, res, next) => {
 //   const { body } = req
 //   addNewUser(body, userPostcode)
@@ -44,21 +41,21 @@ exports.getUserById = (req, res, next) => {
 // }
 
 exports.postNewUser = (req, res, next) => {
-    const { body } = req
-    const userPostcode = body.postcode
-    const username = body.username
-    const addUser = addNewUser(body, userPostcode)
-    const checkUser = checkUserExists(username)
-    const promises = [addUser]
-    if (username) {
-      promises.push(checkUser)
-    }
-    Promise.all(promises).then((response) => {
+  const { body } = req
+  const userPostcode = body.postcode
+  const username = body.username
+  const addUser = addNewUser(body, userPostcode)
+  const checkUser = checkUserExists(username)
+  const promises = [addUser]
+  if (username) {
+    promises.push(checkUser)
+  }
+  Promise.all(promises)
+    .then((response) => {
       const user = response[0]
       res.status(201).send({ user })
     })
-      .catch((err) => {
-        // console.log(err)
-        next(err)
-      })
-  }
+    .catch((err) => {
+      next(err)
+    })
+}

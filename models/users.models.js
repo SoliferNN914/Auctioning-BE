@@ -19,21 +19,24 @@ exports.fetchUserById = (user_id) => {
 }
 
 exports.addNewUser = (body, userPostcode) => {
-    return postcodes
-      .lookup(userPostcode)
-      .then((result) => {
-        const longitude = result.result.longitude
-        const latitude = result.result.latitude
-        const longlat = `${longitude}, ${latitude}`
-        return longlat
-      })
-      .then((longlat) => {
-        return db.query(
-          `INSERT INTO users (username, postcode, coords, device_token) VALUES ($1, $2, $3, $4) RETURNING *`,
-          [body.username, body.postcode, longlat, body.device_token]
-        )
-      })
-      .then((user) => {
-        return user.rows[0]
-      })
+  if (body.username === '' || body.postcode === '') {
+    return Promise.reject({ status: 400, msg: 'Bad request' })
+  }
+  return postcodes
+    .lookup(userPostcode)
+    .then((result) => {
+      const longitude = result.result.longitude
+      const latitude = result.result.latitude
+      const longlat = `${longitude}, ${latitude}`
+      return longlat
+    })
+    .then((longlat) => {
+      return db.query(
+        `INSERT INTO users (username, postcode, coords, device_token) VALUES ($1, $2, $3, $4) RETURNING *`,
+        [body.username, body.postcode, longlat, body.device_token]
+      )
+    })
+    .then((user) => {
+      return user.rows[0]
+    })
 }
