@@ -4,6 +4,7 @@ const allTestData = require('../db/data/test-data/index.js')
 const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
 const fs = require('fs/promises')
+const { scheduledJob } = require('../models/auctions.models.js')
 const d = new Date()
 
 beforeEach(() => seed(allTestData))
@@ -1270,4 +1271,10 @@ describe('GET /api/auctions/:auction_id', () => {
         expect(response.body.msg).toBe('Bad request')
       })
   })
+})
+
+describe('', () => {
+  test('GET 400: responds with an 400 when given an invalid auction_id', () => {
+
+})
 })

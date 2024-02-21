@@ -30,6 +30,7 @@
     "fs.promises": "^0.1.2",
     "husky": "^9.0.11",
     "node-postcodes.io": "^1.0.3",
+    "node-schedule": "^2.1.1",
     "pg": "^8.11.3",
     "pg-format": "^1.0.4"
   },

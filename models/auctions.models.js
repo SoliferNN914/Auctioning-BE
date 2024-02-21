@@ -1,5 +1,17 @@
 const db = require('../db/connection')
 const { checkExists } = require('../utils/check-exists')
+const schedule = require("node-schedule");
+
+exports.scheduledJob = () => {
+  const endTime = new Date().setSeconds(new Date().getSeconds() + 1)
+const auctionJob = schedule.scheduleJob(endTime, function () {
+  db.query(
+    `UPDATE auctions 
+      SET current_price = 10
+      WHERE auction_id = 1`)
+});
+}
+
 
 exports.fetchAuctionsByEventId = (event_id) => {
   return checkExists('events', 'event_id', event_id, 'Event')
@@ -15,6 +27,7 @@ exports.fetchAuctionsByEventId = (event_id) => {
 }
 
 exports.updateAuctionsById = (auction_id, updateAuctionData) => {
+
   const { current_bid, user_id } = updateAuctionData
   if ([current_bid, user_id].includes(undefined)) return Promise.reject({ status: 400, msg: 'Bad Request: Missing Required Fields' })
   return checkExists('auctions', 'auction_id', auction_id, 'Auction')
@@ -44,6 +57,7 @@ exports.updateAuctionsById = (auction_id, updateAuctionData) => {
       )
     })
     .then(({ rows }) => {
+      scheduledJob()
       return rows[0]
     })
 }
