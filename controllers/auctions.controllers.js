@@ -4,6 +4,7 @@ const {
   updateAuctionsById,
   selectAuctionsWonByUserId,
   insertAuction,
+  selectAuctionByAuctionId,
 } = require('../models/auctions.models')
 
 exports.getAuctionsByEventId = (req, res, next) => {
@@ -72,6 +73,17 @@ exports.postAuction = (req, res, next) => {
   })
     .then((auction) => {
       res.status(201).send({ auction })
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.getAuctionByAuctionId = (req, res, next) => {
+  const { auction_id } = req.params
+  selectAuctionByAuctionId(auction_id)
+    .then((auction) => {
+      res.status(200).send({ auction })
     })
     .catch((err) => {
       next(err)

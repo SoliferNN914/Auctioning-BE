@@ -11,6 +11,7 @@ const {
   patchAuctionsById,
   getAuctionsWonByUserId,
   postAuction,
+  getAuctionByAuctionId,
 } = require('./controllers/auctions.controllers')
 
 
@@ -56,6 +57,7 @@ app.get('/api/auctions/user/:user_id', getAuctionsByUserInvolved)
 app.patch('/api/auctions/:auction_id', patchAuctionsById)
 app.get('/api/auctions/won/:user_id', getAuctionsWonByUserId)
 app.post('/api/auctions/:event_id', postAuction)
+app.get('/api/auctions/:auction_id', getAuctionByAuctionId)
 
 app.patch('/api/events/seating/:event_id', patchSeatingById)
 app.get('/api/events/business/:business_id', getEventsByBusinessId)

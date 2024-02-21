@@ -115,70 +115,82 @@ describe('GET/api/users', () => {
   })
 })
 
-
 describe('PATCH/user/user_id', () => {
   test('200: updates the users device token', () => {
     const user = {
       username: 'smink123',
       postcode: 'B47 5HQ',
-      coords: {"x": -1.88381, "y": 52.38532},
+      coords: { x: -1.88381, y: 52.38532 },
       currently_bidding: false,
-      device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
-      user_id: 1
+      device_token:
+        '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
+      user_id: 1,
     }
     return request(app)
-    .patch('/api/users/1')
-    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
-    .expect(200)
-    .then(({body}) => {
-      const {updatedUser} = body
-      expect(updatedUser).toEqual(user)
-    })
+      .patch('/api/users/1')
+      .send({
+        device_token:
+          '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedUser } = body
+        expect(updatedUser).toEqual(user)
+      })
   })
   test('400: responds with error when invalid value type is given', () => {
     return request(app)
-    .patch('/api/users/1')
-    .send({device_token: 6546784847377678676565})
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toBe("Bad request");
-    })
+      .patch('/api/users/1')
+      .send({ device_token: 6546784847377678676565 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
   })
   test('400: responds with error when given an empty string value', () => {
     return request(app)
-    .patch('/api/users/1')
-    .send({device_token: ''})
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toBe("Bad request");
-    })
+      .patch('/api/users/1')
+      .send({ device_token: '' })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
   })
   test('404: responds with error when given a valid, but non-existent user ID', () => {
     return request(app)
-    .patch('/api/users/1567')
-    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toBe("Bad request");
-    })
+      .patch('/api/users/1567')
+      .send({
+        device_token:
+          '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
   })
   test('400: responds with error when given an invalid user ID', () => {
     return request(app)
-    .patch('/api/users/one')
-    .send({device_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toBe("Bad request");
-    })
+      .patch('/api/users/one')
+      .send({
+        device_token:
+          '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
   })
   test('400: responds with error when given an invalid key in the patch request', () => {
     return request(app)
-    .patch('/api/users/2')
-    .send({phone_token: '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f'})
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toBe("Bad request");
-    })
+      .patch('/api/users/2')
+      .send({
+        phone_token:
+          '03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
   })
 })
 describe('POST /api/users', () => {
@@ -283,7 +295,6 @@ describe('POST /api/users', () => {
       .then((response) => {
         expect(response.body.msg).toBe('Bad request')
       })
-
   })
 })
 
@@ -944,13 +955,12 @@ describe('POST /api/events', () => {
 })
 
 describe('POST /api/auctions/:event_id', () => {
-
   const validAuctionData = {
     event_id: 1,
     seat_selection: ['A1', 'A2'],
     current_price: 10.0,
     user_id: 1,
-  };
+  }
   test('201: should post a new auction successfully ', () => {
     return request(app)
       .post('/api/auctions/1')
@@ -958,34 +968,32 @@ describe('POST /api/auctions/:event_id', () => {
       .expect(201)
       .then(({ body }) => {
         const { auction } = body
-        expect(auction).toMatchObject(
-          {
-            auction_id: 6,
-            event_id: 1,
-            seat_selection: [ 'A1', 'A2' ],
-            current_price: "10",
-            users_involved: [ 1 ],
-            active: true,
-            bid_counter: 1
-          }
-        )
-      });
-  });
+        expect(auction).toMatchObject({
+          auction_id: 6,
+          event_id: 1,
+          seat_selection: ['A1', 'A2'],
+          current_price: '10',
+          users_involved: [1],
+          active: true,
+          bid_counter: 1,
+        })
+      })
+  })
   const invalidAuctionData = {
     event_id: 1,
     seat_selection: ['A1', 'A2'],
     current_price: 10.0,
-  };
-  test('400: displays an error if one of the required values are not included', ()=>{
+  }
+  test('400: displays an error if one of the required values are not included', () => {
     return request(app)
-    .post('/api/auctions/1')
-    .send(invalidAuctionData)
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('Bad Request: Missing Required Fields')
-    });
-  });
-});
+      .post('/api/auctions/1')
+      .send(invalidAuctionData)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+})
 
 describe('PATCH /users/:user_id/bidding', () => {
   test('200: returns an object of the user with the bidding status true where it was false before', () => {
@@ -1121,3 +1129,39 @@ describe('POST /api/businesses', () => {
   })
 })
 
+describe('GET /api/auctions/:auction_id', () => {
+  test('200: responds with auction object that corresponds to given id', () => {
+    return request(app)
+      .get('/api/auctions/1')
+      .expect(200)
+      .then(({ body }) => {
+        const { auction } = body
+        expect(auction).toMatchObject({
+          auction_id: 1,
+          event_id: 1,
+          seat_selection: ["A1","A2"],
+          current_price: "5",
+          current_highest_bidder: 2,
+          users_involved: [1, 2],
+          active: false,
+          bid_counter: 3,
+        })
+      })
+  })
+  test('GET 404: responds with an error when given a valid but non-existent auction_id', () => {
+    return request(app)
+      .get('/api/auctions/12345')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Auction not found.')
+      })
+  })
+  test('GET 400: responds with an 400 when given an invalid auction_id', () => {
+    return request(app)
+      .get('/api/auctions/jdks')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request')
+      })
+  })
+})
