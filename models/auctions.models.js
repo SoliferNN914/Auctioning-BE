@@ -11,16 +11,17 @@ exports.fetchAuctionsByEventId = (event_id) => {
       )
     })
     .then(({ rows }) => {
-      const endTime = new Date().setSeconds(new Date().getSeconds() + 30)
+      if (rows[0].event_id === 18) {
+         const endTime = new Date().setSeconds(new Date().getSeconds() + 10)
       const auctionJob = schedule.scheduleJob(endTime, async () => {
         await db.query(
           `UPDATE auctions 
-      SET current_price = 5,
-      active = NOT active
+      SET current_price = current_price + 1
       WHERE auction_id = 1
       RETURNING *`
         )
       })
+      }
       return rows
     })
 }
