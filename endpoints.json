@@ -10,7 +10,7 @@
     "description": "serves an array of all users",
     "queries": []
   },
-  "GET /api/auctions/:event_id": {
+  "GET /api/auctions/event/:event_id": {
     "description": "serves an array of auctions associated with event_id",
     "queries": []
   },
