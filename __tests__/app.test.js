@@ -351,43 +351,82 @@ describe('PATCH /api/auctions/:auction_id', () => {
   test('PATCH 200: responds with updated auction details', () => {
     const updatedAuctionDetails = {
       current_bid: 5,
-      user_id: 1,
-      bid_counter: 4,
+      user_id: 3,
     }
     return request(app)
-      .patch('/api/auctions/1')
+      .patch('/api/auctions/4')
       .send(updatedAuctionDetails)
       .expect(200)
       .then(({ body }) => {
         const { auction } = body
         expect(auction).toMatchObject({
-          auction_id: 1,
-          event_id: 1,
-          seat_selection: ['A1', 'A2'],
+          auction_id: 4,
+          event_id: 2,
+          seat_selection: ['B4'],
+          current_price: '5',
+          current_highest_bidder: 3,
+          users_involved: [1, 2, 4, 3],
+          active: true,
+          bid_counter: 6,
+        })
+      })
+  })
+  test('PATCH 200: responds with updated auction details, not adding user if user already involved', () => {
+    const updatedAuctionDetails = {
+      current_bid: 5,
+      user_id: 1,
+    }
+    return request(app)
+      .patch('/api/auctions/4')
+      .send(updatedAuctionDetails)
+      .expect(200)
+      .then(({ body }) => {
+        const { auction } = body
+        expect(auction).toMatchObject({
+          auction_id: 4,
+          event_id: 2,
+          seat_selection: ['B4'],
           current_price: '5',
           current_highest_bidder: 1,
-          users_involved: [1, 2, 1],
-          active: false,
-          bid_counter: 4,
+          users_involved: [1, 2, 4],
+          active: true,
+          bid_counter: 6,
         })
       })
   })
   test('404: responds with error when given a non-existent auction_id', () => {
     return request(app)
       .patch(`/api/auctions/999`)
-      .send({ seat_selection: ['A1', 'A2'] })
+      .send({
+        current_bid: 5,
+        user_id: 3,
+      })
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('Auction not found')
+        expect(body.msg).toBe('Auction not found.')
       })
   })
   test('PATCH 400: responds with error for invalid auction_id', () => {
     return request(app)
       .patch(`/api/auctions/abc`)
-      .send({ seat_selection: ['A1', 'A2'] })
+      .send({
+        current_bid: 5,
+        user_id: 3,
+      })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request')
+      })
+  })
+  test('400: sends an appropriate error if any required keys are empty or missing(all)', () => {
+    return request(app)
+      .patch('/api/auctions/4')
+      .send({
+        current_bid: 5,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request: Missing Required Fields')
       })
   })
 })
@@ -446,8 +485,7 @@ describe('PATCH/events/seating/:event_id', () => {
             'https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg',
           certificate: '12',
           run_time: 104,
-          // start_time: `1708376518593`,
-          available_seats: ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4'],
+          available_seats: ['A3', 'A4', 'B3', 'B4'],
           active: true,
           start_price: '3',
           business_id: 1,
@@ -627,12 +665,8 @@ describe('GET/events/:event_id', () => {
           certificate: '12',
           run_time: 104,
           available_seats: [
-            'A1',
-            'A2',
             'A3',
             'A4',
-            'B1',
-            'B2',
             'B3',
             'B4',
             'C1',
@@ -954,25 +988,28 @@ describe('POST /api/events', () => {
   })
 })
 
-describe('POST /api/auctions/:event_id', () => {
+describe('POST /api/auctions/', () => {
   const validAuctionData = {
     event_id: 1,
-    seat_selection: ['A1', 'A2'],
+    seat_selection: ['C1', 'C2'],
     current_price: 10.0,
     user_id: 1,
   }
   test('201: should post a new auction successfully ', () => {
     return request(app)
-      .post('/api/auctions/1')
+      .post('/api/auctions/')
       .send(validAuctionData)
       .expect(201)
       .then(({ body }) => {
         const { auction } = body
+        expect(typeof auction.time_started).toBe('string')
+        expect(typeof auction.time_ending).toBe('string')
         expect(auction).toMatchObject({
           auction_id: 6,
           event_id: 1,
-          seat_selection: ['A1', 'A2'],
+          seat_selection: ['C1', 'C2'],
           current_price: '10',
+          current_highest_bidder: 1,
           users_involved: [1],
           active: true,
           bid_counter: 1,
@@ -981,16 +1018,73 @@ describe('POST /api/auctions/:event_id', () => {
   })
   const invalidAuctionData = {
     event_id: 1,
-    seat_selection: ['A1', 'A2'],
-    current_price: 10.0,
+    seat_selection: ['C1', 'C2'],
+    current_price: '',
+    user_id: 1,
   }
-  test('400: displays an error if one of the required values are not included', () => {
+  test('400: displays an error if one of the required values are not included or empty', () => {
     return request(app)
-      .post('/api/auctions/1')
+      .post('/api/auctions/')
       .send(invalidAuctionData)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad Request: Missing Required Fields')
+      })
+  })
+  test('404: responds with error when given a valid, but non-existent user ID', () => {
+    return request(app)
+      .post('/api/auctions/')
+      .send({
+        event_id: 1,
+        seat_selection: ['C1', 'C2'],
+        current_price: 10.0,
+        user_id: 1453453,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('User not found.')
+      })
+  })
+  test('404: responds with error when given a valid, but non-existent event ID', () => {
+    return request(app)
+      .post('/api/auctions/')
+      .send({
+        event_id: 1453534,
+        seat_selection: ['C1', 'C2'],
+        current_price: 10.0,
+        user_id: 1,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Event not found.')
+      })
+  })
+  test('400: displays an appropriate error if any of the selected seats are already under auction', () => {
+    return request(app)
+      .post('/api/auctions/')
+      .send({
+        event_id: 2,
+        seat_selection: ['B3', 'B4'],
+        current_price: 10.0,
+        user_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('One or more seats already under auction.')
+      })
+  })
+  test('400: displays an appropriate error if any of the selected seats are not available for given event', () => {
+    return request(app)
+      .post('/api/auctions/')
+      .send({
+        event_id: 1,
+        seat_selection: ['D1', 'D2'],
+        current_price: 10.0,
+        user_id: 1,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Seats not available.')
       })
   })
 })
@@ -1139,8 +1233,8 @@ describe('GET /api/auctions/:auction_id', () => {
         expect(auction).toMatchObject({
           auction_id: 1,
           event_id: 1,
-          seat_selection: ["A1","A2"],
-          current_price: "5",
+          seat_selection: ['A1', 'A2'],
+          current_price: '5',
           current_highest_bidder: 2,
           users_involved: [1, 2],
           active: false,

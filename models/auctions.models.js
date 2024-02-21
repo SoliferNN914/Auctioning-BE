@@ -14,21 +14,32 @@ exports.fetchAuctionsByEventId = (event_id) => {
     })
 }
 
-exports.updateAuctionsById = (auction_id, current_bid, user_id) => {
-  return db
-    .query(`SELECT * FROM auctions WHERE auction_id = $1 AND active = true`, [
-      auction_id,
-    ])
+exports.updateAuctionsById = (auction_id, updateAuctionData) => {
+  const { current_bid, user_id } = updateAuctionData
+  if ([current_bid, user_id].includes(undefined)) return Promise.reject({ status: 400, msg: 'Bad Request: Missing Required Fields' })
+  return checkExists('auctions', 'auction_id', auction_id, 'Auction')
     .then(() => {
+      return db.query(
+        `SELECT * FROM auctions WHERE auction_id = $1 AND active = true`,
+        [auction_id]
+      )
+    })
+    .then(({ rows }) => {
+      const currentUsers = rows[0].users_involved
+      return currentUsers.includes(user_id)
+        ? currentUsers
+        : [...currentUsers, user_id]
+    })
+    .then((updatedUsers) => {
       return db.query(
         `UPDATE auctions 
           SET current_price = $1, 
               current_highest_bidder = $2,
               bid_counter = bid_counter + 1,
-              users_involved = array_append(users_involved, $2)
+              users_involved = $4
           WHERE auction_id = $3
           RETURNING *`,
-        [current_bid, user_id, auction_id]
+        [current_bid, user_id, auction_id, updatedUsers]
       )
     })
     .then(({ rows }) => {
@@ -68,41 +79,76 @@ exports.selectAuctionsWonByUserId = (user_id) => {
     })
 }
 
-exports.insertAuction = (auctionData) => {
-  const { event_id, seat_selection, current_price, user_id, users_involved } =
-    auctionData
-  if (
-    [event_id, seat_selection, current_price, user_id, users_involved].some(
-      (value) => !value
-    ) ||
-    seat_selection.length === 0
-  ) {
-    return Promise.reject({
-      status: 400,
-      msg: 'Bad Request: Missing Required Fields',
+exports.insertAuction = (new_auction) => {
+  const { event_id, seat_selection, current_price, user_id } = new_auction
+  return checkExists('users', 'user_id', user_id, 'User')
+    .then(() => {
+      return checkExists('events', 'event_id', event_id, 'Event')
     })
-  }
-
-  const userIdAsInt = parseInt(user_id)
-
-  if (isNaN(userIdAsInt)) {
-    throw { status: 400, msg: 'Invalid user_id provided' }
-  }
-
-  return db
-    .query(
-      `
-    INSERT INTO auctions (event_id, seat_selection, current_price, users_involved)
-    VALUES ($1, $2, $3, $4)
-    RETURNING *
-  `,
-      [event_id, seat_selection, current_price, users_involved]
-    )
+    .then(() => {
+      return db.query(
+        'SELECT available_seats FROM events WHERE event_id = $1',
+        [event_id]
+      )
+    })
+    .then(({ rows }) => {
+      if (
+        !seat_selection.every(function (val) {
+          return rows[0].available_seats.indexOf(val) !== -1
+        })
+      )
+        return Promise.reject({
+          status: 400,
+          msg: 'Seats not available.',
+        })
+    })
+    .then(() => {
+      return db.query(
+        'SELECT seat_selection FROM auctions WHERE event_id = $1',
+        [event_id]
+      )
+    })
+    .then(({ rows }) => {
+      const checkSeats = seat_selection.every((val) =>
+        rows.some((element) => element.seat_selection.indexOf(val) !== -1)
+      )
+      if (checkSeats)
+        return Promise.reject({
+          status: 400,
+          msg: 'One or more seats already under auction.',
+        })
+    })
+    .then(() => {
+      const auctionEnd = new Date().setMinutes(new Date().getMinutes() + 20)
+      if (
+        [event_id, seat_selection, current_price, user_id].some(
+          (value) => !value
+        ) ||
+        seat_selection.length === 0
+      ) {
+        return Promise.reject({
+          status: 400,
+          msg: 'Bad Request: Missing Required Fields',
+        })
+      }
+      return db.query(
+        `
+      INSERT INTO auctions (event_id, seat_selection, current_price, users_involved, time_ending, current_highest_bidder)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `,
+        [
+          event_id,
+          seat_selection,
+          current_price,
+          `{${user_id}}`,
+          new Date(auctionEnd),
+          user_id,
+        ]
+      )
+    })
     .then(({ rows }) => {
       return rows[0]
-    })
-    .catch((err) => {
-      throw { status: 400, msg: 'Invalid auction data' }
     })
 }
 
@@ -110,10 +156,11 @@ exports.selectAuctionByAuctionId = (auction_id) => {
   return db
     .query('SELECT * FROM auctions WHERE auction_id = $1', [auction_id])
     .then(({ rows }) => {
-      if (!rows.length) return Promise.reject({
-        status: 404,
-        msg: 'Auction not found.',
-      })
+      if (!rows.length)
+        return Promise.reject({
+          status: 404,
+          msg: 'Auction not found.',
+        })
       return rows[0]
     })
 }
