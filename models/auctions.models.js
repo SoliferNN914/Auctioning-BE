@@ -16,7 +16,7 @@ exports.fetchAuctionsByEventId = (event_id) => {
       const auctionJob = schedule.scheduleJob(endTime, async () => {
         await db.query(
           `UPDATE auctions 
-      SET current_price = current_price + 1
+      SET bid_counter = bid_counter + 1
       WHERE auction_id = 1
       RETURNING *`
         )
