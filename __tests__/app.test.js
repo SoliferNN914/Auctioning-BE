@@ -4,6 +4,7 @@ const allTestData = require('../db/data/test-data/index.js')
 const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
 const fs = require('fs/promises')
+const { scheduledJob } = require('../models/auctions.models.js')
 const d = new Date()
 
 beforeEach(() => seed(allTestData))
@@ -676,16 +677,7 @@ describe('GET/events/:event_id', () => {
             'https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg',
           certificate: '12',
           run_time: 104,
-          available_seats: [
-            'A3',
-            'A4',
-            'B3',
-            'B4',
-            'C1',
-            'C2',
-            'C3',
-            'C4',
-          ],
+          available_seats: ['A3', 'A4', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4'],
           active: true,
           start_price: '3',
           business_id: 1,
