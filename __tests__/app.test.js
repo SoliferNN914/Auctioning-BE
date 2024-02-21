@@ -784,8 +784,8 @@ describe('/auctions/won/:user_id', () => {
 })
 
 describe('POST /api/events', () => {
+  const testStartTime = new Date().setHours(new Date().getHours() + 4)
   test('201: sends an object of the posted event', () => {
-    const d = new Date()
     return request(app)
       .post('/api/events/')
       .send({
@@ -794,7 +794,7 @@ describe('POST /api/events', () => {
           'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
         certificate: '15',
         run_time: '141',
-        start_time: `${d.setHours(d.getHours() + 4)}`,
+        start_time: new Date(testStartTime),
         available_seats: [
           'A2',
           'A5',
@@ -854,7 +854,7 @@ describe('POST /api/events', () => {
           'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
         certificate: '15',
         run_time: '141',
-        start_time: `${d.setHours(d.getHours() + 4)}`,
+        start_time: new Date(testStartTime),
         available_seats: [
           'A2',
           'A5',
@@ -887,7 +887,7 @@ describe('POST /api/events', () => {
           'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
         certificate: '15',
         run_time: '',
-        start_time: `${d.setHours(d.getHours() + 4)}`,
+        start_time: new Date(testStartTime),
         available_seats: [
           'A2',
           'A5',
@@ -920,7 +920,7 @@ describe('POST /api/events', () => {
           'https://m.media-amazon.com/images/M/MV5BNGIyYWMzNjktNDE3MC00YWQyLWEyMmEtN2ZmNzZhZDk3NGJlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_SX300.jpg',
         certificate: '15',
         run_time: '454',
-        start_time: `${d.setHours(d.getHours() + 4)}`,
+        start_time: new Date(testStartTime),
         available_seats: [],
         start_price: 4,
         business_id: 1,
@@ -933,11 +933,10 @@ describe('POST /api/events', () => {
 })
 
 describe('POST /api/auctions/:event_id', () => {
-  const d = new Date()
+
   const validAuctionData = {
     event_id: 1,
     seat_selection: ['A1', 'A2'],
-    time_started: `${d.setHours(d.getHours() + 4)}`,
     current_price: 10.0,
     user_id: 1,
   };
@@ -964,7 +963,6 @@ describe('POST /api/auctions/:event_id', () => {
   const invalidAuctionData = {
     event_id: 1,
     seat_selection: ['A1', 'A2'],
-    time_started: `${d.setHours(d.getHours() + 4)}`,
     current_price: 10.0,
   };
   test('400: displays an error if one of the required values are not included', ()=>{
