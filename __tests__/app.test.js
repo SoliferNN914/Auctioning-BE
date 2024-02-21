@@ -5,7 +5,6 @@ const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
 const fs = require('fs/promises')
 const d = new Date()
-const filmStart1 = d.setHours(d.getHours() + 6)
 
 beforeEach(() => seed(allTestData))
 afterAll(() => db.end())

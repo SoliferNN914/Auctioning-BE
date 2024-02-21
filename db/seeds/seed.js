@@ -24,7 +24,7 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
       return db.query(`
   CREATE TABLE businesses (
     business_id SERIAL PRIMARY KEY,
-    business_name VARCHAR(20),
+    business_name VARCHAR(50),
     postcode VARCHAR(15),
     coords POINT,
     seating_layout TEXT[][]
@@ -48,7 +48,7 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
       return db.query(
         `CREATE TABLE events (
         event_id SERIAL PRIMARY KEY,
-        film_title VARCHAR(40),
+        film_title VARCHAR(120),
         poster TEXT,
         certificate VARCHAR(350),
         run_time INT,
