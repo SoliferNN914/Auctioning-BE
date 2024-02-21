@@ -2,9 +2,6 @@ const db = require('../db/connection')
 const { checkExists } = require('../utils/check-exists')
 const schedule = require('node-schedule')
 
-
-
-
 exports.fetchAuctionsByEventId = (event_id) => {
   return checkExists('events', 'event_id', event_id, 'Event')
     .then(() => {
@@ -18,7 +15,8 @@ exports.fetchAuctionsByEventId = (event_id) => {
       const auctionJob = schedule.scheduleJob(endTime, async () => {
         await db.query(
           `UPDATE auctions 
-      SET current_price = 10
+      SET current_price = 5,
+      active = NOT active
       WHERE auction_id = 1
       RETURNING *`
         )
@@ -36,14 +34,15 @@ exports.updateAuctionsById = (auction_id, updateAuctionData) => {
     })
   return checkExists('auctions', 'auction_id', auction_id, 'Auction')
     .then(() => {
-      return db.query(
-        `SELECT * FROM auctions WHERE auction_id = $1 AND active = true`,
-        [auction_id]
-      )
+      return db.query(`SELECT * FROM auctions WHERE auction_id = $1`, [
+        auction_id,
+      ])
     })
     .then(({ rows }) => {
       if (+rows[0].current_price >= +current_bid)
         return Promise.reject({ status: 400, msg: 'Bid too low.' })
+      if (!rows[0].active)
+        return Promise.reject({ status: 400, msg: 'Auction closed.' })
       const currentUsers = rows[0].users_involved
       return currentUsers.includes(user_id)
         ? currentUsers
