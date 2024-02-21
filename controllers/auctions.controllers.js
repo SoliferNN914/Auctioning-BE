@@ -1,16 +1,16 @@
 const {
-  fetchAuctionsById,
+  fetchAuctionsByEventId,
   selectAuctionsByUserInvolved,
   updateAuctionsById,
   selectAuctionsWonByUserId,
   insertAuction,
 } = require('../models/auctions.models')
 
-exports.getAuctionsById = (req, res, next) => {
+exports.getAuctionsByEventId = (req, res, next) => {
   const { event_id } = req.params
-  fetchAuctionsById(event_id)
-    .then((auction) => {
-      res.status(200).send({ auction })
+  fetchAuctionsByEventId(event_id)
+    .then((auctions) => {
+      res.status(200).send({ auctions })
     })
     .catch((err) => {
       next(err)

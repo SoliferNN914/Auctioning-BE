@@ -287,37 +287,48 @@ describe('POST /api/users', () => {
   })
 })
 
-describe('GET /api/auctions/:event_id', () => {
+describe('GET /api/auctions/event/:event_id', () => {
   test('200: responds with auction details by event_id', () => {
     return request(app)
-      .get('/api/auctions/1')
+      .get('/api/auctions/event/1')
       .expect(200)
       .then(({ body }) => {
-        const { auction } = body
-        expect(auction).toBeDefined()
-        expect(auction).toHaveProperty('auction_id')
-        expect(auction).toHaveProperty('event_id')
-        expect(auction).toHaveProperty('seat_selection')
-        expect(auction).toHaveProperty('current_price')
-        expect(auction).toHaveProperty('time_started')
-        expect(auction).toHaveProperty('time_ending')
-        expect(auction).toHaveProperty('current_highest_bidder')
-        expect(auction).toHaveProperty('users_involved')
-        expect(auction).toHaveProperty('active')
-        expect(auction).toHaveProperty('bid_counter')
+        const { auctions } = body
+        auctions.forEach((auction) => {
+          expect(typeof auction.auction_id).toBe('number')
+          expect(typeof auction.event_id).toBe('number')
+          expect(Array.isArray(auction.seat_selection)).toBe(true)
+          expect(typeof auction.current_price).toBe('string')
+          expect(typeof auction.time_started).toBe('string')
+          expect(typeof auction.current_highest_bidder).toBe('number')
+          expect(Array.isArray(auction.users_involved)).toBe(true)
+          expect(auction.users_involved.includes(2)).toBe(true)
+          expect(typeof auction.active).toBe(true)
+          expect(typeof auction.bid_counter).toBe('number')
+        })
+      })
+  })
+  test('200: responds with an empty array if event has no auctions', () => {
+    return request(app)
+      .get('/api/auctions/event/4')
+      .expect(200)
+      .then(({ body }) => {
+        const { auctions } = body
+        expect(Array.isArray(auctions)).toBe(true)
+        expect(auctions.length).toBe(0)
       })
   })
   test('GET 404: responds with an error when given a valid but non-existent event_id', () => {
     return request(app)
-      .get('/api/auctions/12345')
+      .get('/api/auctions/event/12345')
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe('Auction does not exist')
+        expect(response.body.msg).toBe('Event not found.')
       })
   })
   test('GET 400: responds with an 400 when given an invalid event_id', () => {
     return request(app)
-      .get('/api/auctions/jdks')
+      .get('/api/auctions/event/jdks')
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad request')
