@@ -11,17 +11,13 @@ exports.fetchAuctionsByEventId = (event_id) => {
       )
     })
     .then(({ rows }) => {
-      if (rows[0].event_id === 18) {
-         const endTime = new Date().setSeconds(new Date().getSeconds() + 10)
+      const endTime = new Date().setSeconds(new Date().getSeconds() + 10)
       const auctionJob = schedule.scheduleJob(endTime, async () => {
         await db.query(
-          `UPDATE auctions 
-      SET bid_counter = bid_counter + 1
-      WHERE auction_id = 1
-      RETURNING *`
+          `UPDATE users SET currently_bidding = NOT currently_bidding WHERE user_id = 10`
         )
       })
-      }
+
       return rows
     })
 }
