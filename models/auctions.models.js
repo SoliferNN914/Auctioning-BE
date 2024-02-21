@@ -4,11 +4,12 @@ const { checkExists } = require('../utils/check-exists')
 exports.fetchAuctionsByEventId = (event_id) => {
   return checkExists('events', 'event_id', event_id, 'Event')
     .then(() => {
-      return db.query(`SELECT * FROM auctions WHERE auctions.event_id = $1 AND active = true`, [
-        event_id,
-      ])
+      return db.query(
+        `SELECT * FROM auctions WHERE auctions.event_id = $1 AND active = true`,
+        [event_id]
+      )
     })
-    .then(({rows}) => {
+    .then(({ rows }) => {
       return rows
     })
 }
@@ -102,5 +103,17 @@ exports.insertAuction = (auctionData) => {
     })
     .catch((err) => {
       throw { status: 400, msg: 'Invalid auction data' }
+    })
+}
+
+exports.selectAuctionByAuctionId = (auction_id) => {
+  return db
+    .query('SELECT * FROM auctions WHERE auction_id = $1', [auction_id])
+    .then(({ rows }) => {
+      if (!rows.length) return Promise.reject({
+        status: 404,
+        msg: 'Auction not found.',
+      })
+      return rows[0]
     })
 }
