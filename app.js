@@ -47,7 +47,6 @@ app.post('/api/businesses', postBusiness)
 
 app.get('/api/users', getAllUsers)
 app.get('/api/users/:user_id', getUserById)
-
 app.patch('/api/users/:user_id', editUserById)
 app.post('/api/users', postNewUser)
 app.patch('/api/users/:user_id/bidding', patchUserBiddingStatus)
