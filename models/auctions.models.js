@@ -68,9 +68,9 @@ exports.selectAuctionsWonByUserId = (user_id) => {
 }
 
 exports.insertAuction = (auctionData) => {
-  const { event_id, seat_selection, current_price, user_id, time_started, users_involved } = auctionData;
+  const { event_id, seat_selection, current_price, user_id, users_involved } = auctionData;
   if (
-    [event_id, seat_selection, current_price, user_id, time_started, users_involved].some((value) => !value) ||
+    [event_id, seat_selection, current_price, user_id, users_involved].some((value) => !value) ||
     seat_selection.length === 0
   ) {
     return Promise.reject({
@@ -86,10 +86,10 @@ exports.insertAuction = (auctionData) => {
   }
 
   return db.query(`
-    INSERT INTO auctions (event_id, seat_selection, current_price, users_involved, active, bid_counter, time_started)
-    VALUES ($1, $2, $3, $4, true, 1, $5)
+    INSERT INTO auctions (event_id, seat_selection, current_price, users_involved)
+    VALUES ($1, $2, $3, $4)
     RETURNING *
-  `, [event_id, seat_selection, current_price, users_involved, time_started])
+  `, [event_id, seat_selection, current_price, users_involved])
   .then(({ rows }) => {
 
     return rows[0];

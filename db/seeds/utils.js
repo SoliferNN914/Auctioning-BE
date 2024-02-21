@@ -1,4 +1,4 @@
-exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
-    if (!created_at) return { ...otherProperties };
-    return { created_at: new Date(created_at), ...otherProperties };
+exports.convertTimestampToDate = ({ start_time, ...otherProperties }) => {
+    if (!start_time) return { ...otherProperties };
+    return { start_time: new Date(start_time), ...otherProperties };
   };

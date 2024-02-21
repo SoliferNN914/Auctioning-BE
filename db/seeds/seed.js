@@ -1,5 +1,6 @@
 const format = require('pg-format')
 const db = require('../connection')
+const { convertTimestampToDate } = require('./utils')
 
 function seed({ userData, auctionData, businessesData, eventsData }) {
   return db
@@ -52,7 +53,7 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
         poster TEXT,
         certificate VARCHAR(350),
         run_time INT,
-        start_time VARCHAR(350),
+        start_time TIMESTAMP,
         available_seats TEXT[],
         active BOOLEAN DEFAULT true,
         start_price DECIMAL,
@@ -61,9 +62,10 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
       )
     })
     .then(() => {
+      const formattedEventsData = eventsData.map(convertTimestampToDate);
       const insertEventsQueryStr = format(
         'INSERT INTO events (film_title, poster, certificate, run_time, start_time, available_seats, active, start_price, business_id) VALUES %L RETURNING *;',
-        eventsData.map(
+        formattedEventsData.map(
           ({
             film_title,
             poster,
@@ -120,8 +122,8 @@ function seed({ userData, auctionData, businessesData, eventsData }) {
         event_id INT REFERENCES events(event_id),
         seat_selection TEXT[],
         current_price DECIMAL,
-        time_started VARCHAR(350),
-        time_ending VARCHAR(350),
+        time_started TIMESTAMP DEFAULT NOW(),
+        time_ending TIMESTAMP,
         current_highest_bidder INT REFERENCES users(user_id),
         users_involved INT[],
         active BOOLEAN DEFAULT true,
