@@ -2,12 +2,14 @@
   "name": "be-auctioning",
   "version": "1.0.0",
   "description": "be-auctioning",
+  "main": "listen.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
     "start": "node listen.js",
     "lint": "eslint .",
-    "test": "jest __tests__/app.test.js"
+    "test": "jest __tests__/app.test.js",
+    "seed-prod": "NODE_ENV=production npm run seed"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
