@@ -67,15 +67,15 @@
     "queries": []
   },
   "PATCH /api/events/seating/:event_id": {
-    "descripton": "updates an event's seating when an auction ends and the seats are sold",
+    "description": "updates an event's seating when an auction ends and the seats are sold",
     "queries": []
   },
   "PATCH /api/auctions/:auction_id": {
     "description": "updates an active auction with a new bid and bidder",
     "queries": []
   },
-  "POST /api/auction/:event_id": {
-    "descripton": "Adds a new auction entry for an event",
+  "POST /api/auction/": {
+    "description": "Adds a new auction entry for an event",
     "queries": []
   }
 }

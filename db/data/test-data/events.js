@@ -11,7 +11,7 @@ module.exports = [
     certificate: '12',
     run_time: '104',
     start_time: filmStart1,
-    available_seats: '{A1,A2,A3,A4,B1,B2,B3,B4,C1,C2,C3,C4}',
+    available_seats: '{A3,A4,B3,B4,C1,C2,C3,C4}',
     active: true,
     start_price: 3,
     business_id: 1,
