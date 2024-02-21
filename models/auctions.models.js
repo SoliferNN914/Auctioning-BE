@@ -1,16 +1,8 @@
 const db = require('../db/connection')
 const { checkExists } = require('../utils/check-exists')
-const schedule = require("node-schedule");
+const schedule = require('node-schedule')
 
-exports.scheduledJob = () => {
-  const endTime = new Date().setSeconds(new Date().getSeconds() + 1)
-const auctionJob = schedule.scheduleJob(endTime, function () {
-  db.query(
-    `UPDATE auctions 
-      SET current_price = 10
-      WHERE auction_id = 1`)
-});
-}
+
 
 
 exports.fetchAuctionsByEventId = (event_id) => {
@@ -22,14 +14,26 @@ exports.fetchAuctionsByEventId = (event_id) => {
       )
     })
     .then(({ rows }) => {
+      const endTime = new Date().setSeconds(new Date().getSeconds() + 30)
+      const auctionJob = schedule.scheduleJob(endTime, async () => {
+        await db.query(
+          `UPDATE auctions 
+      SET current_price = 10
+      WHERE auction_id = 1
+      RETURNING *`
+        )
+      })
       return rows
     })
 }
 
 exports.updateAuctionsById = (auction_id, updateAuctionData) => {
-
   const { current_bid, user_id } = updateAuctionData
-  if ([current_bid, user_id].includes(undefined)) return Promise.reject({ status: 400, msg: 'Bad Request: Missing Required Fields' })
+  if ([current_bid, user_id].includes(undefined))
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad Request: Missing Required Fields',
+    })
   return checkExists('auctions', 'auction_id', auction_id, 'Auction')
     .then(() => {
       return db.query(
@@ -38,7 +42,8 @@ exports.updateAuctionsById = (auction_id, updateAuctionData) => {
       )
     })
     .then(({ rows }) => {
-      if (+rows[0].current_price >= +current_bid) return Promise.reject({ status: 400, msg: 'Bid too low.' })
+      if (+rows[0].current_price >= +current_bid)
+        return Promise.reject({ status: 400, msg: 'Bid too low.' })
       const currentUsers = rows[0].users_involved
       return currentUsers.includes(user_id)
         ? currentUsers
@@ -57,7 +62,7 @@ exports.updateAuctionsById = (auction_id, updateAuctionData) => {
       )
     })
     .then(({ rows }) => {
-      scheduledJob()
+      //scheduledJob()
       return rows[0]
     })
 }
