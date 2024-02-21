@@ -429,6 +429,18 @@ describe('PATCH /api/auctions/:auction_id', () => {
         expect(body.msg).toBe('Bad Request: Missing Required Fields')
       })
   })
+  test('400: sends an appropriate error if bid not high enough', () => {
+    return request(app)
+      .patch('/api/auctions/4')
+      .send({
+        current_bid: 3.5,
+        user_id: 3,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bid too low.')
+      })
+  })
 })
 
 describe('GET/api/users/:user_id', () => {

@@ -25,6 +25,7 @@ exports.updateAuctionsById = (auction_id, updateAuctionData) => {
       )
     })
     .then(({ rows }) => {
+      if (+rows[0].current_price >= +current_bid) return Promise.reject({ status: 400, msg: 'Bid too low.' })
       const currentUsers = rows[0].users_involved
       return currentUsers.includes(user_id)
         ? currentUsers
