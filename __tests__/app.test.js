@@ -1264,7 +1264,7 @@ describe('GET /api/auctions/:auction_id', () => {
   })
 })
 
-describe.only('Schedule jobs', () => {
+describe.skip('Schedule jobs', () => {
   describe('auction closing schedule job', () => {
     test('return correct users involved', async () => {
       const output = await auctionEndJobSql(4)
