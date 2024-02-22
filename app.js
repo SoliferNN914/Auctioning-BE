@@ -37,6 +37,44 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 
+
+/////websocket stuff
+const { createServer } = require('node:http');
+const server = createServer(app);
+
+const { join } = require('node:path');
+
+const { Server } = require('socket.io');
+
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, 'index.html'));
+});
+
+
+const io = new Server(server);
+// io.on('connection', (socket) => {
+//   console.log('a user connected');
+//   socket.on('disconnect', () => {
+//     console.log('user disconnected');
+//   });
+// });
+// io.on('connection', (socket) => {
+//   socket.on('chat message', (msg) => {
+//     console.log('message: ' + msg);
+//   });
+// });
+io.on('connection', (socket) => {
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', msg);
+  });
+});
+
+server.listen(3000, () => {
+  console.log('server running at http://localhost:3000');
+});
+
+
+/////////////////
 app.use(cors())
 app.use(express.json())
 
