@@ -5,7 +5,7 @@ const { PORT = 9090 } = process.env
 const http = require('http').Server(app)
 const io = require('socket.io')(http, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: '*',
   },
 })
 io.on('connection', (socket) => {
