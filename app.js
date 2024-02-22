@@ -37,8 +37,15 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 
+const { join } = require('node:path');
+
 app.use(cors())
 app.use(express.json())
+
+//Testing websocket
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, 'index.html'));
+});
 
 app.get('/api/', getEndpoints)
 
