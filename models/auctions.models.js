@@ -91,8 +91,7 @@ exports.selectAuctionsWonByUserId = (user_id) => {
 
 exports.insertAuction = (new_auction) => {
   const { event_id, seat_selection, current_price, user_id } = new_auction
-  // change back to minutes
-  const auctionEnd = new Date().setSeconds(new Date().getSeconds() + 30)
+  const auctionEnd = new Date().setMinutes(new Date().getMinutes() + 5)
   return checkExists('users', 'user_id', user_id, 'User')
     .then(() => {
       return checkExists('events', 'event_id', event_id, 'Event')
