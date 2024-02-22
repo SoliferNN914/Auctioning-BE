@@ -1,6 +1,7 @@
 const db = require('../db/connection')
+const { auctionEndJob } = require('../scheduled/auctionEndJob')
 const { checkExists } = require('../utils/check-exists')
-const schedule = require('node-schedule')
+const { updateUserBiddingStatus } = require('./users.models')
 
 exports.fetchAuctionsByEventId = (event_id) => {
   return checkExists('events', 'event_id', event_id, 'Event')
@@ -11,13 +12,6 @@ exports.fetchAuctionsByEventId = (event_id) => {
       )
     })
     .then(({ rows }) => {
-      const endTime = new Date().setSeconds(new Date().getSeconds() + 10)
-      const auctionJob = schedule.scheduleJob(endTime, async () => {
-        await db.query(
-          `UPDATE users SET currently_bidding = NOT currently_bidding WHERE user_id = 10`
-        )
-      })
-
       return rows
     })
 }
@@ -97,6 +91,8 @@ exports.selectAuctionsWonByUserId = (user_id) => {
 
 exports.insertAuction = (new_auction) => {
   const { event_id, seat_selection, current_price, user_id } = new_auction
+  // change back to minutes
+  const auctionEnd = new Date().setSeconds(new Date().getSeconds() + 30)
   return checkExists('users', 'user_id', user_id, 'User')
     .then(() => {
       return checkExists('events', 'event_id', event_id, 'Event')
@@ -135,7 +131,6 @@ exports.insertAuction = (new_auction) => {
         })
     })
     .then(() => {
-      const auctionEnd = new Date().setMinutes(new Date().getMinutes() + 20)
       if (
         [event_id, seat_selection, current_price, user_id].some(
           (value) => !value
@@ -147,6 +142,9 @@ exports.insertAuction = (new_auction) => {
           msg: 'Bad Request: Missing Required Fields',
         })
       }
+      return updateUserBiddingStatus(user_id)
+    })
+    .then(() => {
       return db.query(
         `
       INSERT INTO auctions (event_id, seat_selection, current_price, users_involved, time_ending, current_highest_bidder)
@@ -164,6 +162,9 @@ exports.insertAuction = (new_auction) => {
       )
     })
     .then(({ rows }) => {
+      if (process.env.NODE_ENV !== 'test') {
+        auctionEndJob(auctionEnd, rows[0].auction_id)
+      }
       return rows[0]
     })
 }

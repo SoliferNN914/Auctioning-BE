@@ -14,7 +14,7 @@ const brumPastEnd = new Date().setHours(new Date().getHours() - 22)
 
 module.exports = [
   
-// 5 brum closed
+// 4 brum closed
 {
   event_id: 10,
   seat_selection: '{E1,E2}',
@@ -83,7 +83,7 @@ module.exports = [
   active: true,
   bid_counter: 4,
 },
-// 4 manc closed - make sure one user has a few 
+// 4 manc closed
 {
   event_id: 17,
   seat_selection: '{E1,E2}',
@@ -129,7 +129,7 @@ module.exports = [
   bid_counter: 3,
 },
 
-//2 open manc (check time in future) - probably keep same user as above involved for easy testing
+//2 open manc
 {
   event_id: 17,
   seat_selection: '{B1,B2}',

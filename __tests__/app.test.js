@@ -4,7 +4,7 @@ const allTestData = require('../db/data/test-data/index.js')
 const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
 const fs = require('fs/promises')
-const { scheduledJob } = require('../models/auctions.models.js')
+const { auctionEndJobSql } = require('../scheduled/auctionEndJob.js')
 const d = new Date()
 
 beforeEach(() => seed(allTestData))
@@ -1263,3 +1263,45 @@ describe('GET /api/auctions/:auction_id', () => {
       })
   })
 })
+
+describe.only('Schedule jobs', () => {
+  describe('auction closing schedule job', () => {
+    test('return correct users involved', async () => {
+      const output = await auctionEndJobSql(4)
+      expect(output.auction.users_involved).toEqual([1, 2, 4])
+    })
+    test('messages to be different if user won', async () => {
+      const output = await auctionEndJobSql(4)
+      expect(output.messages['2']).toEqual('You won!')
+      expect(output.messages['1']).toEqual('You lost!')
+      expect(output.messages['4']).toEqual('You lost!')
+    })
+    test('user status to be set to false', async () => {
+      const output = await auctionEndJobSql(4)
+      output.users.forEach((user) => {
+        expect(user.currently_bidding).toBe(false)
+      })
+    })
+    test('auction status to be set to false', async () => {
+      const output = await auctionEndJobSql(4)
+      expect(output.auction.active).toBe(false)
+    })
+    test('event seats no longer contain the purchased seats', async () => {
+      const output = await auctionEndJobSql(4)
+      expect(output.eventSeats).toEqual([
+        'A1',
+        'A2',
+        'A3',
+        'A4',
+        'B1',
+        'B2',
+        'B3',
+        'C1',
+        'C2',
+        'C3',
+        'C4',
+      ])
+    })
+  })
+})
+// event in question should also return and have seats changed
