@@ -14,7 +14,7 @@ io.on('connection', (socket) => {
     io.emit('chat message', `Message: ${msg}`)
   })
   socket.on('new bid', (bidData) => {
-    io.emit('new bid', { newBid: bidData, auction_id: bidData.auction_id })
+    io.emit('new bid', bidData)
   })
   socket.on('disconnect', () => {
     console.log('user disconnected')
