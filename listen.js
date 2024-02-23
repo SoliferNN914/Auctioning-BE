@@ -11,10 +11,10 @@ const io = require('socket.io')(http, {
 io.on('connection', (socket) => {
   console.log(`⚡: ${socket.id} user just connected!`)
   socket.on('chat message', (msg) => {
-    io.emit('chat message', `Bid Now: ${msg}!`)
+    io.emit('chat message', `Message: ${msg}`)
   })
-  socket.on('new bid', (bid) => {
-    io.emit('new bid', bid)
+  socket.on('new bid', (bidData) => {
+    io.emit('new bid', bidData)
   })
   socket.on('disconnect', () => {
     console.log('user disconnected')
@@ -24,4 +24,3 @@ const server = http.listen(PORT, () => {
   const { port } = server.address()
   console.log(`Listening on port ${port}`)
 })
-
