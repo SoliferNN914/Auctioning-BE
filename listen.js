@@ -13,6 +13,9 @@ io.on('connection', (socket) => {
   socket.on('chat message', (msg) => {
     io.emit('chat message', `Bid Now: ${msg}!`)
   })
+  socket.on('new bid', (bid) => {
+    io.emit('new bid', `Bid Now: ${msg}!`)
+  })
   socket.on('disconnect', () => {
     console.log('user disconnected')
   })
@@ -21,3 +24,4 @@ const server = http.listen(PORT, () => {
   const { port } = server.address()
   console.log(`Listening on port ${port}`)
 })
+
