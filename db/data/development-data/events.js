@@ -1,4 +1,3 @@
-
 const filmStart1 = new Date().setHours(new Date().getHours() + 440)
 const filmStart2 = new Date().setHours(new Date().getHours() + 444)
 const filmStart3 = new Date().setHours(new Date().getHours() + 448)
@@ -93,9 +92,8 @@ module.exports = [
     certificate: '18',
     run_time: '90',
     start_time: new Date(filmStart11),
-    available_seats:
-      '{A4,A5,B5,C1,C2,C3,D3,D4,D5,E1,E2,E3,E4,E5}',
-    active: true,
+    available_seats: '{A4,A5,B5,C1,C2,C3,D3,D4,D5,E1,E2,E3,E4,E5}',
+    active: false,
     start_price: 3.5,
     business_id: 4,
   },
@@ -114,11 +112,12 @@ module.exports = [
   {
     film_title: 'Marmalade',
     poster:
-      'https://m.media-amazon.com/images/M/MV5BMjhkYjA0ZmUtM2I4OC00YzQ1LTk2YWUtYjA3ZGRhM2YzYWU1XkEyXkFqcGdeQXVyMTc1MzUzOTY0._V1_SX300.jpg',
+      'https://m.media-amazon.com/images/M/MV5BZjI0ZDZkMDktMDlkYi00YjhkLWFmMGEtZWUzYTc3ZmEwZmMyXkEyXkFqcGdeQXVyMTM1NjM2ODg1._V1_SX300.jpg',
     certificate: 'PG',
     run_time: '99',
     start_time: new Date(filmStart5),
-    available_seats: '{A3,A4,A5,B1,B2,B3,C1,C2,C3,C4,C5,D1,D2,D3,D4,D5,E1,E2,E3,E4,E5}',
+    available_seats:
+      '{A3,A4,A5,B1,B2,B3,C1,C2,C3,C4,C5,D1,D2,D3,D4,D5,E1,E2,E3,E4,E5}',
     active: true,
     start_price: 2,
     business_id: 5,
@@ -155,8 +154,7 @@ module.exports = [
     certificate: '18',
     run_time: '90',
     start_time: new Date(filmStart4),
-    available_seats:
-      '{A1,A2,B1,B2,C1,C2,C3,C4,C5,D4,D5,E1,E2,E3,E4,E5}',
+    available_seats: '{A1,A2,B1,B2,C1,C2,C3,C4,C5,D4,D5,E1,E2,E3,E4,E5}',
     active: true,
     start_price: 3.5,
     business_id: 6,
@@ -168,8 +166,7 @@ module.exports = [
     certificate: '12',
     run_time: '100',
     start_time: new Date(filmStart8),
-    available_seats:
-      '{A1,A2,A3,A4,A5,B1,B2,C3,C4,C5}',
+    available_seats: '{A1,A2,A3,A4,A5,B1,B2,C3,C4,C5}',
     active: true,
     start_price: 3.5,
     business_id: 7,
@@ -181,8 +178,7 @@ module.exports = [
     certificate: '15',
     run_time: '133',
     start_time: new Date(filmStart3),
-    available_seats:
-      '{A4,A5,B1,B2,B3,B4,B5,C1,C4,C5}',
+    available_seats: '{A4,A5,B1,B2,B3,B4,B5,C1,C4,C5}',
     active: true,
     start_price: 3.5,
     business_id: 7,
@@ -195,7 +191,7 @@ module.exports = [
     run_time: '104',
     start_time: new Date(filmStart10),
     available_seats: '{A5,A6,B1,B2,B5,B6,C1,C4,D3,D4,D5,D6,E1,E2,E3,E4,E5,E6}',
-    active: true,
+    active: false,
     start_price: 3,
     business_id: 8,
   },
@@ -206,7 +202,8 @@ module.exports = [
     certificate: '12',
     run_time: '117',
     start_time: new Date(filmStart1),
-    available_seats: '{A1,A2,A3,A4,A5,A6,B1,B2,B3,C1,C2,D1,D2,D3,D4,D5,D6,E1,E2,E3}',
+    available_seats:
+      '{A1,A2,A3,A4,A5,A6,B1,B2,B3,C1,C2,D1,D2,D3,D4,D5,D6,E1,E2,E3}',
     active: true,
     start_price: 3.5,
     business_id: 8,
@@ -260,5 +257,5 @@ module.exports = [
     active: true,
     start_price: 3,
     business_id: 10,
-  }
+  },
 ]
