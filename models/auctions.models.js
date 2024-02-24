@@ -64,10 +64,17 @@ exports.selectAuctionsByUserInvolved = (user_id, active) => {
   return checkExists('users', 'user_id', user_id, 'User')
     .then(() => {
       const queryValues = [user_id]
-      let queryStr = `SELECT * FROM auctions WHERE $1=ANY(users_involved)`
+      let queryStr = `SELECT auctions.*,
+      film_title,poster,certificate,run_time,start_time,
+      events.active AS event_active,
+      businesses.*
+      FROM auctions 
+      INNER JOIN events ON events.event_id = auctions.event_id
+      INNER JOIN businesses ON events.business_id = businesses.business_id
+      WHERE $1=ANY(users_involved)`
       if (active) {
         queryValues.push(active)
-        queryStr += ' AND active = $2'
+        queryStr += ' AND auctions.active = $2'
       }
       return db.query(queryStr, queryValues)
     })
@@ -80,7 +87,14 @@ exports.selectAuctionsWonByUserId = (user_id) => {
   return checkExists('users', 'user_id', user_id, 'User')
     .then(() => {
       return db.query(
-        `SELECT * FROM auctions WHERE current_highest_bidder=$1 AND active=false`,
+        `SELECT auctions.*,
+        film_title,poster,certificate,run_time,start_time,
+        events.active AS event_active,
+        businesses.*
+        FROM auctions 
+        INNER JOIN events ON events.event_id = auctions.event_id
+        INNER JOIN businesses ON events.business_id = businesses.business_id
+        WHERE current_highest_bidder=$1 AND auctions.active=false`,
         [user_id]
       )
     })
