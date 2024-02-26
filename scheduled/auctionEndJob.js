@@ -37,9 +37,7 @@ auctionEndJobSql = async (auction_id) => {
         'true'
       )
       let user
-      console.log(involved)
       if (!involved.length) {
-        console.log('made it', involved.length)
         user = await updateUserBiddingStatus(user_id)
       }
       //needed for test as data as inaccurate
@@ -54,7 +52,6 @@ auctionEndJobSql = async (auction_id) => {
     //console.log(resultObject)
     return resultObject
   } catch (err) {
-    console.log(err)
     return err
   }
 }
