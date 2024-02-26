@@ -2,6 +2,7 @@ const schedule = require('node-schedule')
 const db = require('../db/connection')
 const { updateUserBiddingStatus } = require('../models/users.models')
 const { updateSeatingById } = require('../models/events.models')
+const auctionFunction = require('../models/auctions.models')
 
 auctionEndJobSql = async (auction_id) => {
   const resultObject = {}
@@ -30,7 +31,17 @@ auctionEndJobSql = async (auction_id) => {
     resultObject.messages = {}
     for (let i = 0; i < auction.users_involved.length; i++) {
       const user_id = auction.users_involved[i]
-      const user = await updateUserBiddingStatus(user_id)
+      // If user is only involved in one auction, change status
+      const involved = await auctionFunction.selectAuctionsByUserInvolved(
+        user_id,
+        'true'
+      )
+      let user
+      console.log(involved)
+      if (!involved.length) {
+        console.log('made it', involved.length)
+        user = await updateUserBiddingStatus(user_id)
+      }
       //needed for test as data as inaccurate
       //user.currently_bidding = false
       resultObject.users.push(user)
@@ -43,6 +54,7 @@ auctionEndJobSql = async (auction_id) => {
     //console.log(resultObject)
     return resultObject
   } catch (err) {
+    console.log(err)
     return err
   }
 }

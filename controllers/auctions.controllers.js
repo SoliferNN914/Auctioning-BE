@@ -33,10 +33,10 @@ exports.getAuctionsByUserInvolved = (req, res, next) => {
 exports.patchAuctionsById = (req, res, next) => {
   const { auction_id } = req.params
   const updateAuctionData = req.body
-  
+
   updateAuctionsById(auction_id, updateAuctionData)
-  .then((auction) => {
-    res.status(200).send({ auction })
+    .then((auction) => {
+      res.status(200).send({ auction })
     })
     .catch((err) => {
       next(err)
