@@ -67,7 +67,7 @@ exports.selectAuctionsByUserInvolved = (user_id, active) => {
       let queryStr = `SELECT auctions.*,
       film_title,poster,certificate,run_time,start_time,
       events.active AS event_active,
-      business_name, postcode, coords
+      business_name, postcode, coords, businesses.business_id
       FROM auctions 
       INNER JOIN events ON events.event_id = auctions.event_id
       INNER JOIN businesses ON events.business_id = businesses.business_id
@@ -90,7 +90,7 @@ exports.selectAuctionsWonByUserId = (user_id) => {
         `SELECT auctions.*,
         film_title,poster,certificate,run_time,start_time,
         events.active AS event_active,
-        business_name, postcode, coords
+        business_name, postcode, coords, businesses.business_id
         FROM auctions 
         INNER JOIN events ON events.event_id = auctions.event_id
         INNER JOIN businesses ON events.business_id = businesses.business_id
