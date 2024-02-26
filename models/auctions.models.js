@@ -94,7 +94,8 @@ exports.selectAuctionsWonByUserId = (user_id) => {
         FROM auctions 
         INNER JOIN events ON events.event_id = auctions.event_id
         INNER JOIN businesses ON events.business_id = businesses.business_id
-        WHERE current_highest_bidder=$1 AND auctions.active=false`,
+        WHERE current_highest_bidder=$1 AND auctions.active=false
+        ORDER BY events.start_time DESC`,
         [user_id]
       )
     })
