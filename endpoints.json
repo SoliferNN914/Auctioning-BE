@@ -1,81 +1,512 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "serves up a json representation of all the available endpoints of the api",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "endpoints": [
+        {
+          "description": "endpoint description",
+          "queries": [],
+          "exampleRequest": {},
+          "exampleResponse": {}
+        }
+      ]
+    }
   },
   "GET /api/businesses": {
     "description": "serves an array of all businesses",
-    "queries": []
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "businesses": [
+        {
+          "business_id": 1,
+          "business_name": "Odeon Broadway Plaza",
+          "postcode": "B16 8LP",
+          "coords": {
+            "x": -1.9218438734336094,
+            "y": 52.473931244643495
+          },
+          "seating_layout": [
+            ["A1", "A2", "A3", "A4"],
+            ["B1", "B2", "B3", "B4"],
+            ["C1", "C2", "C3", "C4"],
+            ["D1", "D2", "D3", "D4"]
+          ]
+        }
+      ]
+    }
   },
+  "POST /api/businesses": {
+    "description": "adds a new business user",
+    "queries": [],
+    "exampleRequest": {
+      "business_name": "Manchester Cinema",
+      "postcode": "M20 5PG",
+      "seating_layout": [
+        ["A1", "A2", "A3", "A4", "A5"],
+        ["B1", "B2", "B3", "B4", "B5"],
+        ["C1", "C2", "C3", "C4", "C5"],
+        ["D1", "D2", "D3", "D4", "D5"],
+        ["E1", "E2", "E3", "E4", "E5"]
+      ]
+    },
+    "exampleResponse": {
+      "business": {
+        "business_id": 4,
+        "business_name": "Manchester Cinema",
+        "postcode": "M20 5PG",
+        "coords": { "x": -2.219511, "y": 53.408664 },
+        "seating_layout": [
+          ["A1", "A2", "A3", "A4", "A5"],
+          ["B1", "B2", "B3", "B4", "B5"],
+          ["C1", "C2", "C3", "C4", "C5"],
+          ["D1", "D2", "D3", "D4", "D5"],
+          ["E1", "E2", "E3", "E4", "E5"]
+        ]
+      }
+    }
+  },
+  "GET /api/businesses/:business_id": {
+    "description": "serves an object of a business by a given ID",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "business": {
+        "business_id": 4,
+        "business_name": "Manchester Cinema",
+        "postcode": "M20 5PG",
+        "coords": { "x": -2.219511, "y": 53.408664 },
+        "seating_layout": [
+          ["A1", "A2", "A3", "A4", "A5"],
+          ["B1", "B2", "B3", "B4", "B5"],
+          ["C1", "C2", "C3", "C4", "C5"],
+          ["D1", "D2", "D3", "D4", "D5"],
+          ["E1", "E2", "E3", "E4", "E5"]
+        ]
+      }
+    }
+  },
+
   "GET /api/users": {
     "description": "serves an array of all users",
-    "queries": []
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "users": [
+        {
+          "user_id": 1,
+          "username": "smink123",
+          "postcode": "B47 5HQ",
+          "coords": {
+            "x": -1.88381,
+            "y": 52.38532
+          },
+          "currently_bidding": true,
+          "device_token": "APA91bFoi3lMMre9G3XzR1LrF4ZT82_15MsMdEICogXSLB8-MrdkRuRQFwNI5u8Dh0cI90ABD3BOKnxkEla8cGdisbDHl5cVIkZah5QUhSAxzx4Roa7b4xy9tvx9iNSYw-eXBYYd8k1XKf8Q_Qq1X9-x-U-Y79vdPq"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:user_id": {
+    "description": "serves an object of a user by a given ID",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "user": {
+        "user_id": 1,
+        "username": "smink123",
+        "postcode": "B47 5HQ",
+        "coords": {
+          "x": -1.88381,
+          "y": 52.38532
+        },
+        "currently_bidding": true,
+        "device_token": "APA91bFoi3lMMre9G3XzR1LrF4ZT82_15MsMdEICogXSLB8-MrdkRuRQFwNI5u8Dh0cI90ABD3BOKnxkEla8cGdisbDHl5cVIkZah5QUhSAxzx4Roa7b4xy9tvx9iNSYw-eXBYYd8k1XKf8Q_Qq1X9-x-U-Y79vdPq"
+      }
+    }
+  },
+  "PATCH /api/users/:user_id": {
+    "description": "updates the users device token with the given token and serves the updated user object",
+    "queries": [],
+    "exampleRequest": {
+      "device_token": "03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2f"
+    },
+    "exampleResponse": {
+      "user": {
+        "user_id": 1,
+        "username": "smink123",
+        "postcode": "B47 5HQ",
+        "coords": {
+          "x": -1.88381,
+          "y": 52.38532
+        },
+        "currently_bidding": true,
+        "device_token": "APA91bFoi3lMMre9G3XzR1LrF4ZT82_15MsMdEICogXSLB8-MrdkRuRQFwNI5u8Dh0cI90ABD3BOKnxkEla8cGdisbDHl5cVIkZah5QUhSAxzx4Roa7b4xy9tvx9iNSYw-eXBYYd8k1XKf8Q_Qq1X9-x-U-Y79vdPq"
+      }
+    }
+  },
+  "PATCH /api/users/:user_id/bidding": {
+    "description": "flips the current bidding status of the given user and serves the updated user object",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "user": {
+        "user_id": 1,
+        "username": "smink123",
+        "postcode": "B47 5HQ",
+        "coords": {
+          "x": -1.88381,
+          "y": 52.38532
+        },
+        "currently_bidding": false,
+        "device_token": "APA91bFoi3lMMre9G3XzR1LrF4ZT82_15MsMdEICogXSLB8-MrdkRuRQFwNI5u8Dh0cI90ABD3BOKnxkEla8cGdisbDHl5cVIkZah5QUhSAxzx4Roa7b4xy9tvx9iNSYw-eXBYYd8k1XKf8Q_Qq1X9-x-U-Y79vdPq"
+      }
+    }
+  },
+  "POST /api/users": {
+    "description": "adds a new user and serves the new user object",
+    "queries": [],
+    "exampleRequest": {
+      "username": "cinemalover",
+      "postcode": "M3 2BW",
+      "device_token": "765ABD673"
+    },
+    "exampleResponse": {
+      "user": {
+        "user_id": 2,
+        "username": "smink123",
+        "postcode": "B47 5HQ",
+        "coords": {
+          "x": -1.88381,
+          "y": 52.38532
+        },
+        "currently_bidding": false,
+        "device_token": "APA91bFoi3lMMre9G3XzR1LrF4ZT82_15MsMdEICogXSLB8-MrdkRuRQFwNI5u8Dh0cI90ABD3BOKnxkEla8cGdisbDHl5cVIkZah5QUhSAxzx4Roa7b4xy9tvx9iNSYw-eXBYYd8k1XKf8Q_Qq1X9-x-U-Y79vdPq"
+      }
+    }
   },
   "GET /api/auctions/:auction_id": {
-    "description": "serves an auctions object associated with auction_id",
-    "queries": []
+    "description": "serves an auction object associated with given auction ID",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "auction": {
+        "auction_id": 1,
+        "event_id": 10,
+        "seat_selection": ["E1", "E2"],
+        "current_price": "4",
+        "time_started": "2024-02-26T23:47:00.774Z",
+        "time_ending": "2024-02-27T00:47:00.774Z",
+        "current_highest_bidder": 3,
+        "users_involved": [3, 4],
+        "active": false,
+        "bid_counter": 3
+      }
+    }
   },
   "GET /api/auctions/event/:event_id": {
     "description": "serves an array of auctions associated with event_id",
-    "queries": []
-  },
-  "PATCH /api/auctions/:event_id": {
-    "description": "seat_selection and users_involved can be patched when selecting auction by event_id",
-    "queries": []
-  },
-  "POST /api/businesses": {
-    "description": "Adds a new business user",
-    "queries": []
-  },
-  "PATCH /api/users/:user_id": {
-    "description": "Updates the users device token with the given token",
-    "queries": []
-  },
-  "PATCH /api/users/:user_id/bidding": {
-    "description": "Updates the currently bidding key on user",
-    "queries": []
-  },
-  "POST /api/users": {
-    "description": "Adds a new user",
-    "queries": []
-  },
-  "POST /api/events": {
-    "description": "Adds a new event using a film API GET request",
-    "queries": []
-  },
-  "GET /api/events": {
-    "description": "Returns an array of event objects. Optional ordering by distance from given coordinates",
-    "queries": ["open", "cinema_id", "distance"]
-  },
-  "GET /api/auctions/won/:user_id": {
-    "description": "Returns an array of auction objects that are no longer active and were won by the user ID given (current_highest_bidder)",
-    "queries": []
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "auctions": [
+        {
+          "auction_id": 1,
+          "event_id": 10,
+          "seat_selection": ["E1", "E2"],
+          "current_price": "4",
+          "time_started": "2024-02-26T23:47:00.774Z",
+          "time_ending": "2024-02-27T00:47:00.774Z",
+          "current_highest_bidder": 3,
+          "users_involved": [3, 4],
+          "active": false,
+          "bid_counter": 3
+        }
+      ]
+    }
   },
   "GET /api/auctions/user/:user_id": {
-    "description": "Returns auctions where the user is involved (in the users_involved column)",
-    "queries": ["active"]
+    "description": "serves an array of auction objects that the given user ID is involved in",
+    "queries": ["active"],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "auctions": [
+        {
+          "auction_id": 1,
+          "event_id": 10,
+          "seat_selection": ["E1", "E2"],
+          "current_price": "4",
+          "time_started": "2024-02-26T23:47:00.774Z",
+          "time_ending": "2024-02-27T00:47:00.774Z",
+          "current_highest_bidder": 3,
+          "users_involved": [3, 4],
+          "active": true,
+          "bid_counter": 3
+        }
+      ]
+    }
   },
-  "GET /api/events/:event_id": {
-    "description": "Returns an object of an event by a given ID",
-    "queries": []
-  },
-  "GET /api/users/:user_id": {
-    "description": "Returns an object of a user by a given ID",
-    "queries": []
-  },
-  "GET api/businesses/:business_id": {
-    "description": "serves an object of a business by a given ID",
-    "queries": []
-  },
-  "PATCH /api/events/seating/:event_id": {
-    "description": "updates an event's seating when an auction ends and the seats are sold",
-    "queries": []
+  "GET /api/auctions/won/:user_id": {
+    "description": "serves an array of auction objects that were won by the user ID given",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "auctions": [
+        {
+          "auction_id": 1,
+          "event_id": 10,
+          "seat_selection": ["E1", "E2"],
+          "current_price": "4",
+          "time_started": "2024-02-26T23:47:00.774Z",
+          "time_ending": "2024-02-27T00:47:00.774Z",
+          "current_highest_bidder": 3,
+          "users_involved": [3, 4],
+          "active": false,
+          "bid_counter": 3
+        }
+      ]
+    }
   },
   "PATCH /api/auctions/:auction_id": {
     "description": "updates an active auction with a new bid and bidder",
-    "queries": []
+    "queries": [],
+    "exampleRequest": { "current_bid": 4.5, "user_id": 4 },
+    "exampleResponse": {
+      "auction": [
+        {
+          "auction_id": 1,
+          "event_id": 10,
+          "seat_selection": ["E1", "E2"],
+          "current_price": "4.5",
+          "time_started": "2024-02-26T23:47:00.774Z",
+          "time_ending": "2024-02-27T00:47:00.774Z",
+          "current_highest_bidder": 5,
+          "users_involved": [3, 4, 5],
+          "active": false,
+          "bid_counter": 4
+        }
+      ]
+    }
   },
   "POST /api/auction/": {
-    "description": "Adds a new auction entry for an event",
-    "queries": []
+    "description": "adds a new auction and serves the new auction object. will also trigger server-side process that will close the auction and update the involved users information after 20 minutes",
+    "queries": [],
+    "exampleRequest": {
+      "event_id": 1,
+      "seat_selection": ["C1", "C2"],
+      "current_price": 4,
+      "user_id": 1
+    },
+    "exampleResponse": {
+      "auction": [
+        {
+          "auction_id": 10,
+          "event_id": 1,
+          "seat_selection": ["E1", "E2"],
+          "current_price": "4",
+          "time_started": "2024-02-26T23:47:00.774Z",
+          "time_ending": "2024-02-27T00:47:00.774Z",
+          "current_highest_bidder": 1,
+          "users_involved": [1],
+          "active": true,
+          "bid_counter": 1
+        }
+      ]
+    }
+  },
+  "GET /api/events/:event_id": {
+    "description": "serves an object of an event by a given ID",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "event": {
+        "event_id": 1,
+        "film_title": "Bob Marley: One Love",
+        "poster": "https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg",
+        "certificate": "12",
+        "run_time": 104,
+        "start_time": "2024-03-16T09:47:00.774Z",
+        "available_seats": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "B3",
+          "C3",
+          "C4",
+          "D1",
+          "D2",
+          "D3",
+          "D4"
+        ],
+        "active": true,
+        "start_price": "3",
+        "business_id": 1
+      }
+    }
+  },
+  "GET /api/events/near/:user_id": {
+    "description": "serves an array of event objects within 8 miles of the given users coordinates",
+    "queries": ["distance"],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "events": [
+        {
+          "event_id": 8,
+          "film_title": "Madame Webb",
+          "poster": "https://m.media-amazon.com/images/M/MV5BMjhkYjA0ZmUtM2I4OC00YzQ1LTk2YWUtYjA3ZGRhM2YzYWU1XkEyXkFqcGdeQXVyMTc1MzUzOTY0._V1_SX300.jpg",
+          "certificate": "12",
+          "run_time": 117,
+          "start_time": "2024-03-11T19:47:00.774Z",
+          "available_seats": [
+            "A2",
+            "A3",
+            "B1",
+            "B2",
+            "B3",
+            "B4",
+            "C1",
+            "C3",
+            "C4"
+          ],
+          "active": true,
+          "start_price": "3.5",
+          "business_id": 4,
+          "business_name": "Cineworld Broadway Birmingham",
+          "postcode": "B15 1DA",
+          "coords": {
+            "x": -1.9156708823957183,
+            "y": 52.474490700486925
+          },
+          "seating_layout": [
+            ["A1", "A2", "A3", "A4", "A5", "A6", "A7"],
+            ["B1", "B2", "B3", "B4", "B5", "B6", "B7"],
+            ["C1", "C2", "C3", "C4", "C5", "C6", "C7"],
+            ["D1", "D2", "D3", "D4", "D5", "D6", "D7"]
+          ],
+          "distance_in_miles": 6.305602000125294
+        }
+      ]
+    }
+  },
+  "GET /api/events/business/:business_id": {
+    "description": "serves an array of event objects associated with the given business ID",
+    "queries": ["active"],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "events": [
+        {
+          "event_id": 1,
+          "film_title": "Bob Marley: One Love",
+          "poster": "https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg",
+          "certificate": "12",
+          "run_time": 104,
+          "start_time": "2024-03-16T09:47:00.774Z",
+          "available_seats": [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "B3",
+            "C3",
+            "C4",
+            "D1",
+            "D2",
+            "D3",
+            "D4"
+          ],
+          "active": true,
+          "start_price": "3",
+          "business_id": 1
+        }
+      ]
+    }
+  },
+  "PATCH /api/events/seating/:event_id": {
+    "description": "updates an event's seating when an auction ends by removed the sold seats and serves an updated event object",
+    "queries": [],
+    "exampleRequest": { "seats_sold": ["C3", "C4"] },
+    "exampleResponse": {
+      "event": [
+        {
+          "event_id": 1,
+          "film_title": "Bob Marley: One Love",
+          "poster": "https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg",
+          "certificate": "12",
+          "run_time": 104,
+          "start_time": "2024-03-16T09:47:00.774Z",
+          "available_seats": [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "B3",
+            "D1",
+            "D2",
+            "D3",
+            "D4"
+          ],
+          "active": true,
+          "start_price": "3",
+          "business_id": 1
+        }
+      ]
+    }
+  },
+  "POST /api/events": {
+    "description": "adds a new event and serves the new event object. will also trigger server-side process that will close the event 30 minutes before the given film start_time",
+    "queries": [],
+    "exampleRequest": {
+      "film_title": "Bob Marley: One Love",
+      "poster": "https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg",
+      "certificate": "12",
+      "run_time": 104,
+      "start_time": "2024-03-16T09:47:00.774Z",
+      "available_seats": [
+        "A1",
+        "A2",
+        "B1",
+        "B2",
+        "B3",
+        "C1",
+        "C2",
+        "D1",
+        "D2",
+        "D3",
+        "D4"
+      ],
+      "start_price": "3",
+      "business_id": 1
+    },
+    "exampleResponse": {
+      "event": [
+        {
+          "event_id": 1,
+          "film_title": "Bob Marley: One Love",
+          "poster": "https://m.media-amazon.com/images/M/MV5BZTRjYzlhNjQtOWZjOC00ZGQzLWEzZjAtMDZjZjBkODMwNWRiXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_SX300.jpg",
+          "certificate": "12",
+          "run_time": 104,
+          "start_time": "2024-03-16T09:47:00.774Z",
+          "available_seats": [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "B3",
+            "C1",
+            "C2",
+            "D1",
+            "D2",
+            "D3",
+            "D4"
+          ],
+          "active": true,
+          "start_price": "3",
+          "business_id": 1
+        }
+      ]
+    }
   }
 }
