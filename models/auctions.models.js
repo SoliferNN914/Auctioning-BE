@@ -106,7 +106,7 @@ exports.selectAuctionsWonByUserId = (user_id) => {
 
 exports.insertAuction = (new_auction) => {
   const { event_id, seat_selection, current_price, user_id } = new_auction
-  const auctionEnd = new Date().setMinutes(new Date().getMinutes() + 5)
+  const auctionEnd = new Date().setSeconds(new Date().getSeconds() + 10)
   return checkExists('users', 'user_id', user_id, 'User')
     .then(() => {
       return checkExists('events', 'event_id', event_id, 'Event')
@@ -156,7 +156,13 @@ exports.insertAuction = (new_auction) => {
           msg: 'Bad Request: Missing Required Fields',
         })
       }
-      return updateUserBiddingStatus(user_id)
+
+      return db.query(
+        'UPDATE users SET currently_bidding = true WHERE user_id = $1',
+        [user_id]
+      )
+      // Pausing this as currently allowing users to bid on more than one
+      //updateUserBiddingStatus(user_id)
     })
     .then(() => {
       return db.query(
