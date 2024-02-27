@@ -49,7 +49,6 @@ auctionEndJobSql = async (auction_id) => {
     }
 
     resultObject.auction.users_involved.forEach((user_id) => {})
-    //console.log(resultObject)
     return resultObject
   } catch (err) {
     return err
