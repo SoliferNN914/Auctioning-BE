@@ -556,6 +556,22 @@ describe('/events/business/:business_id', () => {
           })
         })
     })
+    test('400: sends an appropriate error if id is invalid (i.e. a string)', () => {
+      return request(app)
+        .get('/api/events/business/hello')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Invalid business ID')
+        })
+    })
+    test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+      return request(app)
+        .get('/api/events/business/34234234')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Business not found.')
+        })
+    })
     describe('?active=true/false', () => {
       test('200: sends an array of only active events', () => {
         return request(app)

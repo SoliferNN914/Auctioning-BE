@@ -28,15 +28,22 @@ exports.selectEventsByBusinessId = (active, business_id) => {
   if (active && !['true', 'false'].includes(active.toLowerCase())) {
     return Promise.reject({ status: 400, msg: 'Invalid active query' })
   }
-  const queryValues = [business_id]
-  let queryStr = `SELECT * FROM events WHERE business_id = $1`
-  if (active) {
-    queryValues.push(active)
-    queryStr += ' AND active = $2'
+  if (isNaN(business_id)) {
+    return Promise.reject({ status: 400, msg: 'Invalid business ID' })
   }
-  return db.query(queryStr, queryValues).then(({ rows }) => {
-    return rows
-  })
+  return checkExists('businesses', 'business_id', business_id, 'Business').then(
+    () => {
+      const queryValues = [business_id]
+      let queryStr = `SELECT * FROM events WHERE business_id = $1`
+      if (active) {
+        queryValues.push(active)
+        queryStr += ' AND active = $2'
+      }
+      return db.query(queryStr, queryValues).then(({ rows }) => {
+        return rows
+      })
+    }
+  )
 }
 
 exports.fetchEventById = (event_id) => {
