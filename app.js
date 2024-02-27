@@ -14,8 +14,6 @@ const {
   getAuctionByAuctionId,
 } = require('./controllers/auctions.controllers')
 
-
-
 const {
   getAllUsers,
   getUserById,
@@ -37,15 +35,15 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 
-const { join } = require('node:path');
+const { join } = require('node:path')
 
 app.use(cors())
 app.use(express.json())
 
 //Testing websocket
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'index.html'));
-});
+  res.sendFile(join(__dirname, 'index.html'))
+})
 
 app.get('/api/', getEndpoints)
 
@@ -101,13 +99,5 @@ app.use((err, req, res, next) => {
     res.status(400).send({ msg: 'Bad request' })
   }
 })
-
-// app.use((err, req, res, next) => {
-//   if(err.code === '23505'){
-//       res.status(400).send(({msg: err.detail}))
-//   } else {
-//       next (err)
-//   }
-// })
 
 module.exports = app

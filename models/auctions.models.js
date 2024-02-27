@@ -52,7 +52,6 @@ exports.updateAuctionsById = (auction_id, updateAuctionData) => {
       )
     })
     .then(({ rows }) => {
-      //scheduledJob()
       return rows[0]
     })
 }
