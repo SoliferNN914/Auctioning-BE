@@ -91,7 +91,7 @@ describe('GET/api/businesses/:business_id', () => {
       .get('/api/businesses/jdks')
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Bad Request')
       })
   })
 })
@@ -145,7 +145,7 @@ describe('PATCH/users/user_id', () => {
       .send({ device_token: 6546784847377678676565 })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
   test('400: responds with error when given an empty string value', () => {
@@ -154,7 +154,7 @@ describe('PATCH/users/user_id', () => {
       .send({ device_token: '' })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
   test('404: responds with error when given a valid, but non-existent user ID', () => {
@@ -166,7 +166,7 @@ describe('PATCH/users/user_id', () => {
       })
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
   test('400: responds with error when given an invalid user ID', () => {
@@ -178,7 +178,7 @@ describe('PATCH/users/user_id', () => {
       })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
   test('400: responds with error when given an invalid key in the patch request', () => {
@@ -190,7 +190,7 @@ describe('PATCH/users/user_id', () => {
       })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
 })
@@ -255,7 +255,7 @@ describe('POST /api/users', () => {
       .send(userToAdd)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Required Fields Missing')
       })
   })
   test('POST 400: responds with an error when given a username that already exists', () => {
@@ -268,10 +268,10 @@ describe('POST /api/users', () => {
       .send(userToAdd)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Bad Request')
       })
   })
-  test('POST 400: responds with a bad request error when any of the keys are incorrectly named', () => {
+  test('POST 400: responds with a Bad Request error when any of the keys are incorrectly named', () => {
     const userToAdd = {
       name: 'smink123',
       city: 'B47 5HQ',
@@ -281,10 +281,10 @@ describe('POST /api/users', () => {
       .send(userToAdd)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Required Fields Missing')
       })
   })
-  test('POST 400: responds with a bad request error when any of the values are empty strings', () => {
+  test('POST 400: responds with a Bad Request error when any of the values are empty strings', () => {
     const userToAdd = {
       username: '',
       postcode: '',
@@ -294,7 +294,7 @@ describe('POST /api/users', () => {
       .send(userToAdd)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Bad Request')
       })
   })
 })
@@ -343,7 +343,7 @@ describe('GET /api/auctions/event/:event_id', () => {
       .get('/api/auctions/event/jdks')
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Bad Request')
       })
   })
 })
@@ -416,7 +416,7 @@ describe('PATCH /api/auctions/:auction_id', () => {
       })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
   test('400: sends an appropriate error if any required keys are empty or missing(all)', () => {
@@ -478,7 +478,7 @@ describe('GET/api/users/:user_id', () => {
       .get('/api/users/jdks')
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Bad Request')
       })
   })
 })
@@ -511,7 +511,7 @@ describe('PATCH/events/seating/:event_id', () => {
       .send({ seats_sold: ['C1', 'C2', 'C3', 'C4'] })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
   test("404: sends an appropriate error if id is valid but doesn't exist", () => {
@@ -529,7 +529,7 @@ describe('PATCH/events/seating/:event_id', () => {
       .send({ seats_sold: 'hello' })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Invalid Seats Array')
       })
   })
 })
@@ -646,7 +646,7 @@ describe('/events/near/:user_id', () => {
         .get('/api/events/near/hello')
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe('Bad request')
+          expect(body.msg).toBe('Bad Request')
         })
     })
     test("404: sends an appropriate error if id is valid but doesn't exist", () => {
@@ -715,7 +715,7 @@ describe('GET/events/:event_id', () => {
       .get('/api/events/jdks')
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Bad Request')
       })
   })
 })
@@ -759,7 +759,7 @@ describe('/auctions/user/:user_id', () => {
         .get('/api/auctions/user/hello')
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe('Bad request')
+          expect(body.msg).toBe('Bad Request')
         })
     })
     test("404: sends an appropriate error if id is valid but doesn't exist", () => {
@@ -845,7 +845,7 @@ describe('/auctions/won/:user_id', () => {
         .get('/api/auctions/won/hello')
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe('Bad request')
+          expect(body.msg).toBe('Bad Request')
         })
     })
     test("404: sends an appropriate error if id is valid but doesn't exist", () => {
@@ -1145,7 +1145,7 @@ describe('PATCH /users/:user_id/bidding', () => {
       .patch('/api/users/hello/bidding')
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe('Bad Request')
       })
   })
   test("404: sends an appropriate error if id is valid but doesn't exist", () => {
@@ -1275,7 +1275,7 @@ describe('GET /api/auctions/:auction_id', () => {
       .get('/api/auctions/jdks')
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request')
+        expect(response.body.msg).toBe('Bad Request')
       })
   })
 })
