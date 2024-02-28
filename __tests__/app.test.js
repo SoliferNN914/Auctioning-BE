@@ -28,7 +28,7 @@ describe('GET/api', () => {
         .get('/api')
         .expect(200)
         .then((response) => {
-          expect(response.body.endpointObject).toEqual(JSON.parse(result))
+          expect(response.body).toEqual(JSON.parse(result))
         })
     })
   })
@@ -116,7 +116,7 @@ describe('GET/api/users', () => {
   })
 })
 
-describe('PATCH/user/user_id', () => {
+describe('PATCH/users/user_id', () => {
   test('200: updates the users device token', () => {
     const user = {
       username: 'smink123',
