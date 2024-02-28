@@ -9,7 +9,7 @@ exports.updateSeatingById = (seats_sold, event_id) => {
       if (!rows.length)
         return Promise.reject({ status: 404, msg: 'Event not found.' })
       if (!Array.isArray(seats_sold) || !seats_sold.length)
-        return Promise.reject
+        return Promise.reject({ status: 400, msg: 'Invalid Seats Array' })
       const currentSeats = rows[0].available_seats
       const updatedSeats = currentSeats.filter(
         (seat) => !seats_sold.includes(seat)
