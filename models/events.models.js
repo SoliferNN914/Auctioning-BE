@@ -91,9 +91,7 @@ exports.insertNewEvent = (new_event) => {
     start_price,
     business_id,
   } = new_event
-  // get instance of start time
   const eventEnd = new Date(start_time)
-  // take away 30 minutes from that to find end time
   eventEnd.setMinutes(new Date().getMinutes() - 30)
   for (const key in new_event) {
     if (new_event[key] === '' || new_event.available_seats.length === 0) {

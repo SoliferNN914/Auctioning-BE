@@ -1,4 +1,3 @@
-
 const auctionStart1 = new Date().setMinutes(new Date().getMinutes())
 const auctionStart2 = new Date().setMinutes(new Date().getMinutes() - 40)
 const auctionStart3 = new Date().setMinutes(new Date().getMinutes() + 40)
@@ -6,10 +5,6 @@ const auctionStart3 = new Date().setMinutes(new Date().getMinutes() + 40)
 const auctionEnd1 = new Date().setMinutes(new Date().getMinutes() + 20)
 const auctionEnd2 = new Date().setMinutes(new Date().getMinutes() - 20)
 const auctionEnd3 = new Date().setMinutes(new Date().getMinutes() + 60)
-
-//auction1 active now
-//auction2 ended
-//auction3 active in future
 
 module.exports = [
   {

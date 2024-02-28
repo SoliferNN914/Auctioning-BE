@@ -3,15 +3,15 @@ const brumAuctionEnd = new Date().setHours(new Date().getHours() + 359)
 const activeAuctionStart = new Date().setMinutes(new Date().getMinutes() - 1)
 const recentAuctionStart = new Date().setHours(new Date().getHours() - 2)
 const recentAuctionEnd = new Date().setHours(new Date().getHours() - 1)
-// mcr past
+// Times for Manchester in the past
 const mcrPastStart = new Date().setHours(new Date().getHours() - 8)
 const mcrPastEnd = new Date().setHours(new Date().getHours() - 9)
-//brum past
+// Times for Birmingham in the past
 const brumPastStart = new Date().setHours(new Date().getHours() - 21)
 const brumPastEnd = new Date().setHours(new Date().getHours() - 22)
 
 module.exports = [
-  // 4 brum closed
+  // 4 Auctions closed in Birmingham
   {
     event_id: 10,
     seat_selection: '{E1,E2}',
@@ -57,7 +57,7 @@ module.exports = [
     bid_counter: 3,
   },
 
-  //2 open brum
+  // 4 Auctions open in Birmingham
   {
     event_id: 10,
     seat_selection: '{B1,B2}',
@@ -80,7 +80,7 @@ module.exports = [
     active: true,
     bid_counter: 4,
   },
-  // 4 manc closed
+  // 4 Auctions closed in Manchester
   {
     event_id: 17,
     seat_selection: '{E1,E2}',
@@ -126,7 +126,7 @@ module.exports = [
     bid_counter: 3,
   },
 
-  //2 open manc
+  // 2 Auctions closed in Manchester
   {
     event_id: 17,
     seat_selection: '{B1,B2}',

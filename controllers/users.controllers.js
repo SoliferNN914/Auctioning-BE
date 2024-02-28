@@ -1,13 +1,11 @@
-
 const {
   fetchAllUsers,
   fetchUserById,
-   changeUserById,
+  changeUserById,
   addNewUser,
   updateUserBiddingStatus,
 } = require('../models/users.models')
-const postcodes = require('node-postcodes.io')
-const { checkUserExists } = require('../db/utils/userExistsCheck')
+const { checkUserExists } = require('../utils/userExistsCheck')
 
 exports.getAllUsers = (req, res, next) => {
   fetchAllUsers()
@@ -51,22 +49,24 @@ exports.postNewUser = (req, res, next) => {
 }
 
 exports.patchUserBiddingStatus = (req, res, next) => {
-  const {user_id} = req.params
-  updateUserBiddingStatus(user_id).then((user) => {
-    res.status(200).send({user})
-  })
-  .catch((err) => {
-    next(err)
-  })
+  const { user_id } = req.params
+  updateUserBiddingStatus(user_id)
+    .then((user) => {
+      res.status(200).send({ user })
+    })
+    .catch((err) => {
+      next(err)
+    })
 }
 
 exports.editUserById = (req, res, next) => {
   const { user_id } = req.params
   const { device_token } = req.body
-  changeUserById(user_id, device_token).then((updatedUser) => {
-    res.status(200).send({updatedUser})
-  })
-  .catch((err) => {
-    next(err)
-  })
+  changeUserById(user_id, device_token)
+    .then((updatedUser) => {
+      res.status(200).send({ updatedUser })
+    })
+    .catch((err) => {
+      next(err)
+    })
 }
