@@ -3,6 +3,7 @@
 The API for a live auctioning platform for cinema tickets where businesses can list events and seats for auction and users can bid on tickets for those seats.
 
 - Hosted: https://auctioning-be.onrender.com/api/
+- Frontend Repo: https://github.com/bensuth86/auctioning-fe
 
 ## Contributors
 

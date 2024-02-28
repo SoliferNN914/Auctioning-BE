@@ -1,4 +1,5 @@
 module.exports = [
+  // Users in Birmingham
   {
     username: 'smink123',
     postcode: 'B47 5HQ',
@@ -36,6 +37,7 @@ module.exports = [
     currently_bidding: true,
     device_token: null,
   },
+  // Users in Manchester
   {
     username: 'lightickyuckalthough',
     postcode: 'M32 0PZ',

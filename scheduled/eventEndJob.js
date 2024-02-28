@@ -3,11 +3,11 @@ const db = require('../db/connection')
 
 eventEndJobSql = async (event_id) => {
   try {
-    // Set event to closed
-    await db.query(`UPDATE events SET active = false WHERE event_id = $1`, [
-      event_id,
-    ])
-    return
+    const result = await db.query(
+      `UPDATE events SET active = false WHERE event_id = $1 RETURNING *`,
+      [event_id]
+    )
+    return result
   } catch (err) {
     return err
   }

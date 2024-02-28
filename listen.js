@@ -10,9 +10,6 @@ const io = require('socket.io')(http, {
 })
 io.on('connection', (socket) => {
   console.log(`⚡: ${socket.id} user just connected!`)
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', `Message: ${msg}`)
-  })
   socket.on('new bid', (bidData) => {
     io.emit('new bid', bidData)
   })

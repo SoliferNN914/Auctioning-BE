@@ -1,4 +1,5 @@
 module.exports = [
+  // Cinemas in Birmingham
   {
     business_name: 'Odeon Broadway Plaza',
     postcode: 'B16 8LP',
@@ -32,6 +33,7 @@ module.exports = [
     seating_layout:
       '{{A1,A2,A3,A4,A5},{B1,B2,B3,B4,B5},{C1,C2,C3,C4,C5},{D1,D2,D3,D4,D5},{E1,E2,E3,E4,E5}}',
   },
+  // Cinemas in Manchester
   {
     business_name: 'Odeon Great Northern',
     postcode: 'M3 4EN',
@@ -43,8 +45,7 @@ module.exports = [
     business_name: 'Backyard Cinema Manchester',
     postcode: 'M1 2PY',
     coords: '-2.22763, 53.47635',
-    seating_layout:
-      '{{A1,A2,A3,A4,A5},{B1,B2,B3,B4,B5},{C1,C2,C3,C4,C5}}'
+    seating_layout: '{{A1,A2,A3,A4,A5},{B1,B2,B3,B4,B5},{C1,C2,C3,C4,C5}}',
   },
   {
     business_name: 'Vue Cinema Manchester - Printworks',
@@ -66,5 +67,5 @@ module.exports = [
     coords: '-2.23727, 53.49226',
     seating_layout:
       '{{A1,A2,A3,A4,A5},{B1,B2,B3,B4,B5},{C1,C2,C3,C4,C5},{D1,D2,D3,D4,D5},{E1,E2,E3,E4,E5},{F1,F2,F3,F4,F5},{G1,G2,G3,G4,G5}}',
-  }
+  },
 ]

@@ -11,6 +11,7 @@ const filmStart10 = new Date().setHours(new Date().getHours() - 10)
 const filmStart11 = new Date().setHours(new Date().getHours() - 20)
 
 module.exports = [
+  // Events in Birmingham
   {
     film_title: 'Bob Marley: One Love',
     poster:
@@ -134,6 +135,7 @@ module.exports = [
     start_price: 3.5,
     business_id: 5,
   },
+  // Events in Manchester
   {
     film_title: 'The Holdovers',
     poster:
