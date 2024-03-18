@@ -28,11 +28,14 @@ npm install
 ```bash
 # Create the databases
 npm run setup-dbs
+
 # Testing
 npm test
+
 # Running locally
 npm run seed
 npm run start
+
 ## Open http://localhost:9090 in your browser
 open http://localhost:9090
 ```
