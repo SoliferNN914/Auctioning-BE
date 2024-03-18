@@ -1,4 +1,4 @@
-# BLOST Auctioning API
+# TicketDash API
 
 The API for a live auctioning platform for cinema tickets where businesses can list events and seats for auction and users can bid on tickets for those seats.
 
